@@ -50,7 +50,12 @@
     - Configure health check in Dockerfile
     - _Requirements: 1.1, 9.1_
   
-  - [ ]* 2.5 Write unit tests for application endpoints
+  - [x] 2.5 Write unit tests for application endpoints
+
+
+
+
+
     - Test health check endpoints return correct status
     - Test API endpoints return expected responses
     - Test error handling and edge cases
