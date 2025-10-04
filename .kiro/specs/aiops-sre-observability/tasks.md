@@ -13,26 +13,38 @@
   - Create .gitignore and README.md with project overview
   - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 5.1, 5.2, 5.3, 6.1, 6.2, 6.3, 7.1, 7.2, 7.3, 8.1, 8.2, 8.3, 9.1, 9.2, 9.3_
 
-- [ ] 2. Implement demo application with OpenTelemetry instrumentation
-  - [ ] 2.1 Create Node.js Express application with basic endpoints
+- [x] 2. Implement demo application with OpenTelemetry instrumentation
+
+
+
+
+  - [x] 2.1 Create Node.js Express application with basic endpoints
+
+
     - Initialize Node.js project with package.json
     - Implement Express server with /health, /ready, and sample API endpoints (/api/users, /api/products)
     - Add error simulation endpoint for testing error scenarios
     - _Requirements: 1.1, 1.2_
   
-  - [ ] 2.2 Integrate OpenTelemetry SDK with auto-instrumentation
+  - [x] 2.2 Integrate OpenTelemetry SDK with auto-instrumentation
+
+
     - Install @opentelemetry/sdk-node and auto-instrumentation packages
     - Configure OTel SDK to export metrics and traces to Collector via OTLP
     - Set service name and resource attributes
     - _Requirements: 1.1, 1.2, 1.3_
   
-  - [ ] 2.3 Add custom metrics and spans for business logic
+  - [x] 2.3 Add custom metrics and spans for business logic
+
+
     - Implement custom metrics (request counter, business operation duration)
     - Add manual spans for critical business operations
     - Add span attributes and events for context
     - _Requirements: 1.2, 1.3_
   
-  - [ ] 2.4 Create Dockerfile for demo application
+  - [x] 2.4 Create Dockerfile for demo application
+
+
     - Write multi-stage Dockerfile for Node.js app
     - Optimize image size and build time
     - Configure health check in Dockerfile
