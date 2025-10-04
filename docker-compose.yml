@@ -32,13 +32,13 @@ services:
       retries: 3
       start_period: 40s
 
-  # OpenTelemetry Collector - Will be configured in task 3
+  # OpenTelemetry Collector - Configured in task 3
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: otel-collector
     command: ["--config=/etc/otel-collector/config.yaml"]
     volumes:
-      - ./otel-collector/config.yaml:/etc/otel-collector/config.yaml
+      - ./otel-collector/otel-collector-config.yaml:/etc/otel-collector/config.yaml
     ports:
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver

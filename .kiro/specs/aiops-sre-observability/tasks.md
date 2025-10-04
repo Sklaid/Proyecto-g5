@@ -61,15 +61,23 @@
     - Test error handling and edge cases
     - _Requirements: 1.1, 1.2_
 
-- [ ] 3. Configure OpenTelemetry Collector
-  - [ ] 3.1 Create Collector configuration file
+- [x] 3. Configure OpenTelemetry Collector
+
+
+
+
+  - [x] 3.1 Create Collector configuration file
+
+
     - Write otel-collector-config.yaml with receivers (OTLP gRPC and HTTP)
     - Configure processors (batch, memory_limiter)
     - Configure exporters (Prometheus, OTLP for Tempo)
     - Define service pipelines for metrics and traces
     - _Requirements: 1.3, 2.1, 3.1_
   
-  - [ ] 3.2 Add Collector service to Docker Compose
+  - [x] 3.2 Add Collector service to Docker Compose
+
+
     - Define otel-collector service with official image
     - Mount configuration file as volume
     - Expose necessary ports (4317, 4318, 8889)
