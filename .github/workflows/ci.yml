@@ -1,0 +1,115 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-nodejs:
+    name: Test Node.js Application
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: demo-app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: demo-app/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint --if-present
+      
+      - name: Run unit tests
+        run: npm test
+      
+      - name: Generate coverage report
+        run: npm test -- --coverage --coverageReporters=json --coverageReporters=lcov
+        continue-on-error: true
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./demo-app/coverage/lcov.info
+          flags: nodejs
+          name: demo-app-coverage
+        continue-on-error: true
+
+  test-python:
+    name: Test Python Service
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: anomaly-detector
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: anomaly-detector/requirements.txt
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 black pylint pytest-cov
+      
+      - name: Run linter (flake8)
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        continue-on-error: true
+      
+      - name: Run code formatter check (black)
+        run: black --check .
+        continue-on-error: true
+      
+      - name: Run pylint
+        run: pylint *.py --disable=C0111,R0903
+        continue-on-error: true
+      
+      - name: Run unit tests
+        run: pytest test_*.py --verbose
+      
+      - name: Generate coverage report
+        run: pytest test_*.py --cov=. --cov-report=xml --cov-report=term
+        continue-on-error: true
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./anomaly-detector/coverage.xml
+          flags: python
+          name: anomaly-detector-coverage
+        continue-on-error: true
+
+  build-status:
+    name: Build Status
+    runs-on: ubuntu-latest
+    needs: [test-nodejs, test-python]
+    if: always()
+    
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.test-nodejs.result }}" == "failure" ] || [ "${{ needs.test-python.result }}" == "failure" ]; then
+            echo "Build failed!"
+            exit 1
+          fi
+          echo "All tests passed successfully!"

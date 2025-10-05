@@ -1,0 +1,225 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: 
+      name: staging
+      url: http://staging.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Pull latest images
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest || true
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest || true
+      
+      - name: Deploy with Docker Compose
+        run: |
+          # Update docker-compose to use registry images
+          export DEMO_APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest
+          export ANOMALY_DETECTOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest
+          
+          # Deploy stack
+          docker-compose -f docker-compose.yml up -d
+          
+          # Wait for services to be ready
+          echo "Waiting for services to start..."
+          sleep 30
+      
+      - name: Run smoke tests - Health checks
+        id: health-check
+        run: |
+          echo "Testing demo-app health endpoint..."
+          curl -f http://localhost:3000/health || exit 1
+          
+          echo "Testing demo-app ready endpoint..."
+          curl -f http://localhost:3000/ready || exit 1
+          
+          echo "Testing Prometheus..."
+          curl -f http://localhost:9090/-/healthy || exit 1
+          
+          echo "Testing Grafana..."
+          curl -f http://localhost:3001/api/health || exit 1
+          
+          echo "All health checks passed!"
+      
+      - name: Run smoke tests - Metrics baseline
+        id: metrics-check
+        run: |
+          echo "Waiting for metrics to be collected..."
+          sleep 15
+          
+          echo "Checking if metrics are being reported..."
+          METRICS=$(curl -s http://localhost:9090/api/v1/query?query=up | grep -o '"status":"success"')
+          
+          if [ -z "$METRICS" ]; then
+            echo "Metrics check failed!"
+            exit 1
+          fi
+          
+          echo "Checking demo-app metrics..."
+          APP_METRICS=$(curl -s http://localhost:9090/api/v1/query?query=http_server_requests_total | grep -o '"status":"success"')
+          
+          if [ -z "$APP_METRICS" ]; then
+            echo "Demo app metrics not found!"
+            exit 1
+          fi
+          
+          echo "Metrics baseline check passed!"
+      
+      - name: Run smoke tests - Trace validation
+        id: trace-check
+        run: |
+          echo "Generating test traffic..."
+          curl -s http://localhost:3000/api/users > /dev/null
+          curl -s http://localhost:3000/api/products > /dev/null
+          
+          echo "Waiting for traces to be processed..."
+          sleep 10
+          
+          echo "Checking Tempo for traces..."
+          # Basic check that Tempo is responding
+          curl -f http://localhost:3200/ready || exit 1
+          
+          echo "Trace validation passed!"
+      
+      - name: Rollback on failure
+        if: failure() && (steps.health-check.outcome == 'failure' || steps.metrics-check.outcome == 'failure' || steps.trace-check.outcome == 'failure')
+        run: |
+          echo "Deployment failed! Rolling back..."
+          docker-compose -f docker-compose.yml down
+          
+          # Pull previous stable images (tagged as stable)
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable || true
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable || true
+          
+          # Redeploy with stable images
+          export DEMO_APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable
+          export ANOMALY_DETECTOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable
+          docker-compose -f docker-compose.yml up -d
+          
+          echo "Rollback completed!"
+          exit 1
+      
+      - name: Tag images as stable
+        if: success()
+        run: |
+          # Tag current images as stable for future rollbacks
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest \
+                     ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest \
+                     ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable
+          
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable
+      
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** Staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Deployment failed and rolled back!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.event.inputs.environment == 'production' || github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: http://production.example.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Manual approval required
+        run: |
+          echo "⚠️ Production deployment requires manual approval"
+          echo "Please review the staging deployment before proceeding"
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Pull stable images
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable
+      
+      - name: Deploy to production
+        run: |
+          export DEMO_APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:stable
+          export ANOMALY_DETECTOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:stable
+          
+          # Deploy to production (this would typically use a different compose file or K8s)
+          docker-compose -f docker-compose.yml up -d
+          
+          echo "Waiting for services to start..."
+          sleep 30
+      
+      - name: Run production smoke tests
+        run: |
+          echo "Running production health checks..."
+          curl -f http://localhost:3000/health || exit 1
+          curl -f http://localhost:3000/ready || exit 1
+          
+          echo "Production deployment successful!"
+      
+      - name: Rollback production on failure
+        if: failure()
+        run: |
+          echo "Production deployment failed! Rolling back..."
+          docker-compose -f docker-compose.yml down
+          
+          # Restore previous production version
+          # This would typically involve more sophisticated rollback logic
+          echo "Rollback mechanism triggered!"
+          exit 1

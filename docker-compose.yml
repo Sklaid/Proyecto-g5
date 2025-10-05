@@ -12,6 +12,7 @@ volumes:
 services:
   # Demo Application - Will be implemented in task 2
   demo-app:
+    image: ${DEMO_APP_IMAGE:-demo-app:local}
     build:
       context: ./demo-app
       dockerfile: Dockerfile
@@ -132,6 +133,7 @@ services:
 
   # Anomaly Detector - Implemented in task 7
   anomaly-detector:
+    image: ${ANOMALY_DETECTOR_IMAGE:-anomaly-detector:local}
     build:
       context: ./anomaly-detector
       dockerfile: Dockerfile
