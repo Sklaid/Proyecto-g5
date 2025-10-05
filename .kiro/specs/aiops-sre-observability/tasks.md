@@ -132,33 +132,63 @@
     - Add rules for request rate aggregation
     - _Requirements: 2.2, 2.3, 4.2, 4.3_
 
-- [ ] 5. Set up Tempo for distributed tracing
-  - [ ] 5.1 Create Tempo configuration
+- [x] 5. Set up Tempo for distributed tracing
+
+
+
+
+  - [x] 5.1 Create Tempo configuration
+
+
     - Write tempo.yaml with receiver config for OTLP
     - Configure storage backend (local filesystem for development)
     - Set retention policy
     - _Requirements: 3.1, 3.2, 3.3_
   
-  - [ ] 5.2 Add Tempo service to Docker Compose
+  - [x] 5.2 Add Tempo service to Docker Compose
+
+
     - Define tempo service with official Grafana Tempo image
     - Mount configuration and create persistent volume
     - Expose ports for OTLP receiver and HTTP API
     - _Requirements: 3.1, 3.2_
   
-  - [ ]* 5.3 Write integration tests for trace storage
+  - [x] 5.3 Write integration tests for trace storage
+
+
+
+
+
+
     - Test that traces are successfully stored in Tempo
     - Test trace query API returns expected results
     - Test trace retention policy
     - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 6. Configure Grafana with datasources and dashboards
-  - [ ] 6.1 Create Grafana provisioning files
+- [x] 6. Configure Grafana with datasources and dashboards
+
+
+
+
+  - [x] 6.1 Create Grafana provisioning files
+
+
+
+
+
+
+
     - Write datasource provisioning for Prometheus
     - Write datasource provisioning for Tempo
     - Create provisioning directory structure
     - _Requirements: 4.1, 4.2, 4.3, 5.1, 5.2, 5.3_
   
-  - [ ] 6.2 Implement SLI/SLO dashboard
+  - [x] 6.2 Implement SLI/SLO dashboard
+
+
+
+
+
     - Create dashboard JSON with panels for latency P95/P99
     - Add error rate visualization with threshold lines
     - Implement error budget calculation and burn rate panels
@@ -166,21 +196,30 @@
     - Include SLO target indicators and status
     - _Requirements: 4.1, 4.2, 4.3_
   
-  - [ ] 6.3 Implement Application Performance dashboard
+  - [x] 6.3 Implement Application Performance dashboard
+
+
+
+
+
     - Create dashboard with request duration histograms
     - Add throughput visualization by endpoint
     - Include error rate breakdown by status code
     - Add resource utilization panels (CPU, memory)
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 6.4 Implement Distributed Tracing dashboard
+  - [x] 6.4 Implement Distributed Tracing dashboard
+
+
     - Create dashboard with trace search interface
     - Add service dependency graph visualization
     - Include latency breakdown by service
     - Highlight error traces with filters
     - _Requirements: 5.3_
   
-  - [ ] 6.5 Configure alerting rules
+  - [x] 6.5 Configure alerting rules
+
+
     - Create alert for high burn rate (error budget consumption)
     - Add alert for latency P95 exceeding SLI threshold
     - Create alert for error rate > 1%
@@ -188,7 +227,9 @@
     - Configure notification channels (webhook for testing)
     - _Requirements: 4.3, 6.3, 8.3_
   
-  - [ ] 6.6 Add Grafana service to Docker Compose
+  - [x] 6.6 Add Grafana service to Docker Compose
+
+
     - Define grafana service with official image
     - Mount provisioning directories for datasources and dashboards
     - Create persistent volume for Grafana data

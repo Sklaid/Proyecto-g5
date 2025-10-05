@@ -1,0 +1,217 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: SLO Alerts
+    folder: Alerting
+    interval: 1m
+    rules:
+      # High burn rate alert - error budget consumption
+      - uid: high-burn-rate
+        title: High Error Budget Burn Rate
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(rate(http_server_requests_total{status_code=~"5.."}[1h]))
+                  /
+                  sum(rate(http_server_requests_total[1h]))
+                ) > 0.01
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(rate(http_server_requests_total{status_code=~"5.."}[5m]))
+                  /
+                  sum(rate(http_server_requests_total[5m]))
+                ) > 0.01
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: math
+              expression: $A > 0.01 && $B > 0.01
+              refId: C
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          description: "Error budget is being consumed at a high rate. Current 1h error rate: {{ $values.A.Value }}. This indicates potential service degradation."
+          summary: "High error budget burn rate detected"
+        labels:
+          severity: critical
+          team: sre
+          alert_type: slo
+
+      # Latency P95 exceeding SLI threshold
+      - uid: high-latency-p95
+        title: High Latency P95 Exceeding SLI
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(0.95, 
+                  sum by (le) (rate(http_server_request_duration_seconds_bucket[5m]))
+                ) * 1000 > 200
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          description: "P95 latency is {{ $values.A.Value }}ms, exceeding the 200ms SLI threshold. This may impact user experience."
+          summary: "P95 latency exceeds SLI threshold"
+        labels:
+          severity: high
+          team: sre
+          alert_type: performance
+
+      # Error rate exceeding 1%
+      - uid: high-error-rate
+        title: High Error Rate Above 1%
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(rate(http_server_requests_total{status_code=~"[45].."}[5m]))
+                  /
+                  sum(rate(http_server_requests_total[5m]))
+                ) * 100 > 1
+              refId: A
+        noDataState: NoData
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          description: "Error rate is {{ $values.A.Value }}%, exceeding the 1% threshold. Immediate investigation required."
+          summary: "Error rate above 1%"
+        labels:
+          severity: critical
+          team: sre
+          alert_type: availability
+
+      # Anomaly detection trigger
+      # DISABLED: Will be enabled when anomaly-detector service is implemented (Task 7)
+      # - uid: anomaly-detected
+      #   title: Anomaly Detected by ML Model
+      #   condition: A
+      #   data:
+      #     - refId: A
+      #       relativeTimeRange:
+      #         from: 600
+      #         to: 0
+      #       datasourceUid: prometheus
+      #       model:
+      #         expr: |
+      #           anomaly_detected{confidence="high"} == 1
+      #         refId: A
+      #   noDataState: NoData
+      #   execErrState: OK
+      #   for: 1m
+      #   annotations:
+      #     description: "An anomaly has been detected by the ML-based anomaly detector. Metric: {{ $labels.metric }}, Deviation: {{ $labels.deviation }}"
+      #     summary: "ML anomaly detection triggered"
+      #   labels:
+      #     severity: high
+      #     team: sre
+      #     alert_type: anomaly
+
+  - orgId: 1
+    name: Infrastructure Alerts
+    folder: Alerting
+    interval: 1m
+    rules:
+      # Service down alert
+      - uid: service-down
+        title: Service Down
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                up{job="demo-app"} == 0
+              refId: A
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          description: "Service {{ $labels.job }} is down. Instance: {{ $labels.instance }}"
+          summary: "Service is not responding"
+        labels:
+          severity: critical
+          team: sre
+          alert_type: availability
+
+      # High memory usage
+      - uid: high-memory-usage
+        title: High Memory Usage
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (process_memory_usage_bytes / 1024 / 1024) > 400
+              refId: A
+        noDataState: NoData
+        execErrState: OK
+        for: 5m
+        annotations:
+          description: "Memory usage is {{ $values.A.Value }}MB, exceeding 400MB threshold for service {{ $labels.service_name }}"
+          summary: "High memory usage detected"
+        labels:
+          severity: warning
+          team: sre
+          alert_type: resource
+
+      # High CPU usage
+      - uid: high-cpu-usage
+        title: High CPU Usage
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                process_cpu_usage * 100 > 80
+              refId: A
+        noDataState: NoData
+        execErrState: OK
+        for: 5m
+        annotations:
+          description: "CPU usage is {{ $values.A.Value }}%, exceeding 80% threshold for service {{ $labels.service_name }}"
+          summary: "High CPU usage detected"
+        labels:
+          severity: warning
+          team: sre
+          alert_type: resource

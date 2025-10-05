@@ -104,7 +104,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # Grafana - Will be configured in task 6
+  # Grafana - Configured in task 6
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -115,6 +115,8 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
     ports:
       - "3001:3000"
     networks:
@@ -129,17 +131,18 @@ services:
       retries: 3
 
   # Anomaly Detector - Will be implemented in task 7
-  anomaly-detector:
-    build:
-      context: ./anomaly-detector
-      dockerfile: Dockerfile
-    container_name: anomaly-detector
-    environment:
-      - PROMETHEUS_URL=http://prometheus:9090
-      - CHECK_INTERVAL_MINUTES=5
-      - GRAFANA_WEBHOOK_URL=http://grafana:3000/api/alerts
-    networks:
-      - observability-network
-    depends_on:
-      - prometheus
-      - grafana
+  # Commented out until Task 7 is complete
+  # anomaly-detector:
+  #   build:
+  #     context: ./anomaly-detector
+  #     dockerfile: Dockerfile
+  #   container_name: anomaly-detector
+  #   environment:
+  #     - PROMETHEUS_URL=http://prometheus:9090
+  #     - CHECK_INTERVAL_MINUTES=5
+  #     - GRAFANA_WEBHOOK_URL=http://grafana:3000/api/alerts
+  #   networks:
+  #     - observability-network
+  #   depends_on:
+  #     - prometheus
+  #     - grafana
