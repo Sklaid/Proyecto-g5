@@ -1,9 +1,19 @@
 const express = require('express');
 const { trace, context, SpanStatusCode } = require('@opentelemetry/api');
 const { requestCounter, operationDuration, activeUsers } = require('./metrics');
+const promClient = require('prom-client');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Configure prom-client to collect default Node.js metrics
+const register = new promClient.Registry();
+promClient.collectDefaultMetrics({ 
+  register,
+  prefix: 'nodejs_',
+  gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+  eventLoopMonitoringPrecision: 10
+});
 
 // Get tracer
 const tracer = trace.getTracer('demo-app-tracer', '1.0.0');
@@ -23,6 +33,16 @@ const products = [
   { id: 2, name: 'Mouse', price: 29.99, stock: 200 },
   { id: 3, name: 'Keyboard', price: 79.99, stock: 150 }
 ];
+
+// Metrics endpoint for Prometheus
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (err) {
+    res.status(500).end(err);
+  }
+});
 
 // Health check endpoints
 app.get('/health', (req, res) => {

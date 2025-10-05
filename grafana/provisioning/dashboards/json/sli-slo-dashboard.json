@@ -703,15 +703,15 @@
               },
               {
                 "color": "yellow",
-                "value": 7
+                "value": 50
               },
               {
                 "color": "green",
-                "value": 14
+                "value": 80
               }
             ]
           },
-          "unit": "d"
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -742,13 +742,13 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "((sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name) * 0.001) - sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name)) / (sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[1h])) by (service_name) * 86400)",
-          "legendFormat": "{{service_name}}",
+          "expr": "(1 - (sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name) or vector(0)) / (sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name) + 1)) * 100",
+          "legendFormat": "{{service_name}} Budget Remaining %",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Error Budget Exhaustion (Days Remaining)",
+      "title": "Error Budget Remaining (30d)",
       "type": "stat"
     },
     {

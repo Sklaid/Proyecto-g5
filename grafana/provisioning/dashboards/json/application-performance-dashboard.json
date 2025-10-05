@@ -487,7 +487,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"4..\"}[5m])) by (http_status_code) / sum(rate(http_server_duration_milliseconds_count[5m])) * 100",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"4..\"}[5m])) by (http_status_code) / ignoring(http_status_code) group_left sum(rate(http_server_duration_milliseconds_count[5m]))) * 100",
           "legendFormat": "4xx - {{http_status_code}}",
           "range": true,
           "refId": "A"
@@ -498,7 +498,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[5m])) by (http_status_code) / sum(rate(http_server_duration_milliseconds_count[5m])) * 100",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[5m])) by (http_status_code) / ignoring(http_status_code) group_left sum(rate(http_server_duration_milliseconds_count[5m]))) * 100",
           "hide": false,
           "legendFormat": "5xx - {{http_status_code}}",
           "range": true,
@@ -698,7 +698,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(process_cpu_seconds_total{service_name=\"demo-app\"}[5m])",
+          "expr": "rate(nodejs_process_cpu_seconds_total{service_name=\"demo-app\"}[5m])",
           "legendFormat": "CPU Usage - {{service_name}}",
           "range": true,
           "refId": "A"
@@ -826,7 +826,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "process_resident_memory_bytes{service_name=\"demo-app\"}",
+          "expr": "nodejs_process_resident_memory_bytes{service_name=\"demo-app\"}",
           "legendFormat": "RSS - {{service_name}}",
           "range": true,
           "refId": "A"
@@ -837,9 +837,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "nodejs_heap_size_used_bytes{service_name=\"demo-app\"}",
+          "expr": "nodejs_process_heap_bytes{service_name=\"demo-app\"}",
           "hide": false,
-          "legendFormat": "Heap Used - {{service_name}}",
+          "legendFormat": "Heap - {{service_name}}",
           "range": true,
           "refId": "B"
         },
@@ -849,9 +849,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "nodejs_heap_size_total_bytes{service_name=\"demo-app\"}",
+          "expr": "nodejs_process_heap_bytes{service_name=\"demo-app\"}",
           "hide": false,
-          "legendFormat": "Heap Total - {{service_name}}",
+          "legendFormat": "Heap - {{service_name}}",
           "range": true,
           "refId": "C"
         }
@@ -916,7 +916,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(process_cpu_seconds_total{service_name=\"demo-app\"}[5m]) * 100",
+          "expr": "rate(nodejs_process_cpu_seconds_total{service_name=\"demo-app\"}[5m]) * 100",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -982,7 +982,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(nodejs_heap_size_used_bytes{service_name=\"demo-app\"} / nodejs_heap_size_total_bytes{service_name=\"demo-app\"}) * 100",
+          "expr": "nodejs_process_heap_bytes{service_name=\"demo-app\"} / 1024 / 1024",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
