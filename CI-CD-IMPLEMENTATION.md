@@ -26,7 +26,11 @@ Se ha implementado un pipeline completo de CI/CD con GitHub Actions que incluye 
 scripts/
 ├── validate-ci.ps1               # Validación local (Windows)
 ├── validate-ci.sh                # Validación local (Linux/Mac)
-└── smoke-tests.ps1               # Smoke tests post-deployment
+├── smoke-tests.ps1               # Smoke tests post-deployment (Windows)
+├── smoke-tests.sh                # Smoke tests post-deployment (Linux/Mac)
+├── ci-smoke-tests.sh             # Smoke tests optimizados para CI/CD
+├── SMOKE_TESTS_README.md         # Documentación completa de smoke tests
+└── QUICK_START_SMOKE_TESTS.md   # Guía rápida de smoke tests
 ```
 
 ### Archivos Modificados
@@ -115,23 +119,56 @@ scripts/
 
 ## 🧪 Smoke Tests Implementados
 
-Los siguientes tests se ejecutan automáticamente post-deployment:
+Los siguientes tests se ejecutan automáticamente post-deployment para validar los requisitos 9.2 y 9.3:
 
-### Health Checks
+### 1. Health Checks (Requirement 9.2)
+Valida que todos los servicios estén respondiendo:
 - ✅ Demo App (`/health`, `/ready`)
 - ✅ Prometheus (`/-/healthy`)
 - ✅ Grafana (`/api/health`)
 - ✅ Tempo (`/ready`)
+- ✅ OTel Collector (indirectamente vía métricas)
 
-### Metrics Baseline
-- ✅ Prometheus está recopilando métricas
-- ✅ Demo app está reportando métricas HTTP
+### 2. Metrics Validation (Requirement 9.2)
+Verifica que las métricas se están recopilando correctamente:
+- ✅ Prometheus está recopilando métricas (`up` query)
+- ✅ Demo app está reportando métricas HTTP (`http_server_requests_total`)
+- ✅ OTel Collector está procesando telemetría (`otelcol_receiver_accepted_spans`)
 - ✅ Métricas de sistema disponibles
 
-### Trace Validation
-- ✅ Generación de tráfico de prueba
+### 3. Trace Validation (Requirement 9.3)
+Confirma que las trazas distribuidas están funcionando:
+- ✅ Generación de tráfico de prueba (5 requests a diferentes endpoints)
 - ✅ Tempo está procesando trazas
-- ✅ Trazas son consultables
+- ✅ Al menos una traza es visible en Tempo (API query)
+- ✅ Trazas son consultables vía API
+
+### 4. Grafana Dashboards (Requirement 9.3)
+Valida que la capa de visualización está operativa:
+- ✅ Datasource de Prometheus configurado
+- ✅ Datasource de Tempo configurado
+- ✅ Dashboards son accesibles vía API
+- ✅ Grafana API responde correctamente
+
+### Scripts Disponibles
+
+**Para CI/CD (optimizado):**
+```bash
+./scripts/ci-smoke-tests.sh
+```
+
+**Para desarrollo local (detallado):**
+```bash
+# Linux/Mac
+./scripts/smoke-tests.sh
+
+# Windows
+.\scripts\smoke-tests.ps1
+```
+
+**Documentación:**
+- [Guía completa de smoke tests](scripts/SMOKE_TESTS_README.md)
+- [Quick start](scripts/QUICK_START_SMOKE_TESTS.md)
 
 ---
 

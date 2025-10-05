@@ -58,65 +58,14 @@ jobs:
           echo "Waiting for services to start..."
           sleep 30
       
-      - name: Run smoke tests - Health checks
-        id: health-check
+      - name: Run smoke tests
+        id: smoke-tests
         run: |
-          echo "Testing demo-app health endpoint..."
-          curl -f http://localhost:3000/health || exit 1
-          
-          echo "Testing demo-app ready endpoint..."
-          curl -f http://localhost:3000/ready || exit 1
-          
-          echo "Testing Prometheus..."
-          curl -f http://localhost:9090/-/healthy || exit 1
-          
-          echo "Testing Grafana..."
-          curl -f http://localhost:3001/api/health || exit 1
-          
-          echo "All health checks passed!"
-      
-      - name: Run smoke tests - Metrics baseline
-        id: metrics-check
-        run: |
-          echo "Waiting for metrics to be collected..."
-          sleep 15
-          
-          echo "Checking if metrics are being reported..."
-          METRICS=$(curl -s http://localhost:9090/api/v1/query?query=up | grep -o '"status":"success"')
-          
-          if [ -z "$METRICS" ]; then
-            echo "Metrics check failed!"
-            exit 1
-          fi
-          
-          echo "Checking demo-app metrics..."
-          APP_METRICS=$(curl -s http://localhost:9090/api/v1/query?query=http_server_requests_total | grep -o '"status":"success"')
-          
-          if [ -z "$APP_METRICS" ]; then
-            echo "Demo app metrics not found!"
-            exit 1
-          fi
-          
-          echo "Metrics baseline check passed!"
-      
-      - name: Run smoke tests - Trace validation
-        id: trace-check
-        run: |
-          echo "Generating test traffic..."
-          curl -s http://localhost:3000/api/users > /dev/null
-          curl -s http://localhost:3000/api/products > /dev/null
-          
-          echo "Waiting for traces to be processed..."
-          sleep 10
-          
-          echo "Checking Tempo for traces..."
-          # Basic check that Tempo is responding
-          curl -f http://localhost:3200/ready || exit 1
-          
-          echo "Trace validation passed!"
+          chmod +x scripts/ci-smoke-tests.sh
+          ./scripts/ci-smoke-tests.sh
       
       - name: Rollback on failure
-        if: failure() && (steps.health-check.outcome == 'failure' || steps.metrics-check.outcome == 'failure' || steps.trace-check.outcome == 'failure')
+        if: failure() && steps.smoke-tests.outcome == 'failure'
         run: |
           echo "Deployment failed! Rolling back..."
           docker-compose -f docker-compose.yml down
