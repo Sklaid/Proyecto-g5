@@ -106,8 +106,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_request_duration_seconds:p95 * 1000",
-          "legendFormat": "P95 - {{service_name}}{{http_route}}",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_duration_milliseconds_bucket[5m])) by (le, service_name, http_route))",
+          "legendFormat": "P95 - {{service_name}} {{http_route}}",
           "range": true,
           "refId": "A"
         },
@@ -117,9 +117,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_request_duration_seconds:p99 * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(http_server_duration_milliseconds_bucket[5m])) by (le, service_name, http_route))",
           "hide": false,
-          "legendFormat": "P99 - {{service_name}}{{http_route}}",
+          "legendFormat": "P99 - {{service_name}} {{http_route}}",
           "range": true,
           "refId": "B"
         }
@@ -186,7 +186,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_requests:success_rate_percent",
+          "expr": "(1 - (sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[5m])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[5m])) by (service_name))) * 100",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -253,7 +253,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "1 - (sum(increase(http_server_requests_total{http_status_code=~\"5..\"}[30d])) by (service_name) / sum(increase(http_server_requests_total[30d])) by (service_name))",
+          "expr": "1 - (sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name) / sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name))",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -350,8 +350,8 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_requests:error_rate_percent",
-          "legendFormat": "Error Rate - {{service_name}}{{http_route}}",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"[45]..\"}[5m])) by (service_name, http_route) / sum(rate(http_server_duration_milliseconds_count[5m])) by (service_name, http_route)) * 100",
+          "legendFormat": "Error Rate - {{service_name}} {{http_route}}",
           "range": true,
           "refId": "A"
         },
@@ -361,9 +361,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_requests:5xx_error_rate_percent",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[5m])) by (service_name, http_route) / sum(rate(http_server_duration_milliseconds_count[5m])) by (service_name, http_route)) * 100",
           "hide": false,
-          "legendFormat": "5xx Error Rate - {{service_name}}{{http_route}}",
+          "legendFormat": "5xx Error Rate - {{service_name}} {{http_route}}",
           "range": true,
           "refId": "B"
         }
@@ -459,7 +459,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:error_budget:burn_rate_1h",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[1h])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[1h])) by (service_name)) / 0.001",
           "legendFormat": "1h Burn Rate - {{service_name}}",
           "range": true,
           "refId": "A"
@@ -470,7 +470,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:error_budget:burn_rate_6h",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[6h])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[6h])) by (service_name)) / 0.001",
           "hide": false,
           "legendFormat": "6h Burn Rate - {{service_name}}",
           "range": true,
@@ -482,7 +482,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:error_budget:burn_rate_24h",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[24h])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[24h])) by (service_name)) / 0.001",
           "hide": false,
           "legendFormat": "24h Burn Rate - {{service_name}}",
           "range": true,
@@ -551,7 +551,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:error_budget:burn_rate_1h",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[1h])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[1h])) by (service_name)) / 0.001",
           "legendFormat": "{{service_name}} (1h)",
           "range": true,
           "refId": "A"
@@ -640,7 +640,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_total[30d])) by (service_name) * 0.001",
+          "expr": "sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name) * 0.001",
           "legendFormat": "Total Budget - {{service_name}}",
           "range": true,
           "refId": "A"
@@ -651,7 +651,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_total{http_status_code=~\"5..\"}[30d])) by (service_name)",
+          "expr": "sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name)",
           "hide": false,
           "legendFormat": "Consumed - {{service_name}}",
           "range": true,
@@ -663,7 +663,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(sum(increase(http_server_requests_total[30d])) by (service_name) * 0.001) - sum(increase(http_server_requests_total{http_status_code=~\"5..\"}[30d])) by (service_name)",
+          "expr": "(sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name) * 0.001) - sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name)",
           "hide": false,
           "legendFormat": "Remaining - {{service_name}}",
           "range": true,
@@ -742,7 +742,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "((sum(increase(http_server_requests_total[30d])) by (service_name) * 0.001) - sum(increase(http_server_requests_total{http_status_code=~\"5..\"}[30d])) by (service_name)) / (sum(rate(http_server_requests_total{http_status_code=~\"5..\"}[1h])) by (service_name) * 86400)",
+          "expr": "((sum(increase(http_server_duration_milliseconds_count[30d])) by (service_name) * 0.001) - sum(increase(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[30d])) by (service_name)) / (sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"5..\"}[1h])) by (service_name) * 86400)",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -810,7 +810,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:latency_slo:compliance_percent",
+          "expr": "(sum(rate(http_server_duration_milliseconds_count{http_status_code=~\"2..\"}[5m])) by (service_name) / sum(rate(http_server_duration_milliseconds_count[5m])) by (service_name)) * 100",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -899,7 +899,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sli:http_requests_per_second:by_service",
+          "expr": "sum(rate(http_server_duration_milliseconds_count[5m])) by (service_name)",
           "legendFormat": "{{service_name}}",
           "range": true,
           "refId": "A"
@@ -952,3 +952,4 @@
   "version": 0,
   "weekStart": ""
 }
+
