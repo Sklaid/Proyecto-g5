@@ -1,7 +1,10 @@
 name: Deploy to Staging
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types:
+      - completed
     branches: [ main ]
   workflow_dispatch:
     inputs:
@@ -22,6 +25,8 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
+    # Only run if docker build was successful or if manually triggered
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     environment: 
       name: staging
       url: http://staging.example.com
@@ -40,19 +45,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Pull latest images
+      - name: Check if images exist
+        id: check-images
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest || true
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest || true
+          echo "Checking if Docker images exist..."
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest 2>/dev/null; then
+            echo "demo_app_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "demo_app_exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ demo-app image not found, will build locally"
+          fi
+          
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest 2>/dev/null; then
+            echo "anomaly_detector_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "anomaly_detector_exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ anomaly-detector image not found, will build locally"
+          fi
       
       - name: Deploy with Docker Compose
         run: |
-          # Update docker-compose to use registry images
-          export DEMO_APP_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/demo-app:latest
-          export ANOMALY_DETECTOR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/anomaly-detector:latest
+          # If images don't exist in registry, build locally
+          if [ "${{ steps.check-images.outputs.demo_app_exists }}" == "false" ] || [ "${{ steps.check-images.outputs.anomaly_detector_exists }}" == "false" ]; then
+            echo "Building images locally..."
+            docker-compose build
+          fi
           
           # Deploy stack
-          docker-compose -f docker-compose.yml up -d
+          docker-compose up -d
           
           # Wait for services to be ready
           echo "Waiting for services to start..."

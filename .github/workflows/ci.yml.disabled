@@ -34,10 +34,12 @@ jobs:
       
       - name: Run unit tests
         run: npm test
+        continue-on-error: false
       
       - name: Generate coverage report
         run: npm test -- --coverage --coverageReporters=json --coverageReporters=lcov
         continue-on-error: true
+        if: success() || failure()
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -86,10 +88,12 @@ jobs:
       
       - name: Run unit tests
         run: pytest test_*.py --verbose
+        continue-on-error: false
       
       - name: Generate coverage report
         run: pytest test_*.py --cov=. --cov-report=xml --cov-report=term
         continue-on-error: true
+        if: success() || failure()
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
