@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability-prod
+
+namePrefix: prod-
+
+commonLabels:
+  environment: production
+
+bases:
+  - ../../base
+
+patches:
+  - path: demo-app-patch.yaml
+  - path: prometheus-patch.yaml
+  - path: tempo-patch.yaml
+  - path: grafana-patch.yaml
+
+replicas:
+  - name: demo-app
+    count: 3
+  - name: prometheus
+    count: 1
+  - name: tempo
+    count: 1
+
+images:
+  - name: ghcr.io/sklaid/proyecto-g5/demo-app
+    newTag: stable
+  - name: ghcr.io/sklaid/proyecto-g5/anomaly-detector
+    newTag: stable
+
+configMapGenerator:
+  - name: prometheus-config
+    behavior: merge
+    files:
+      - prometheus-prod.yml=prometheus.yml

@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: demo-app
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.namespace=observability-dev,deployment.environment=development"

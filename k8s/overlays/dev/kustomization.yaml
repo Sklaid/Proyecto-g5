@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability-dev
+
+namePrefix: dev-
+
+commonLabels:
+  environment: development
+
+bases:
+  - ../../base
+
+patches:
+  - path: demo-app-patch.yaml
+  - path: resource-limits-patch.yaml
+
+replicas:
+  - name: demo-app
+    count: 1
+  - name: prometheus
+    count: 1
+  - name: tempo
+    count: 1
+
+images:
+  - name: ghcr.io/sklaid/proyecto-g5/demo-app
+    newTag: develop
+  - name: ghcr.io/sklaid/proyecto-g5/anomaly-detector
+    newTag: develop

@@ -1,0 +1,61 @@
+# Development environment values
+
+global:
+  namespace: observability-dev
+  environment: development
+
+demoApp:
+  replicaCount: 1
+  image:
+    tag: develop
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+  env:
+    NODE_ENV: development
+
+prometheus:
+  persistence:
+    size: 5Gi
+  retention: 7d
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+tempo:
+  persistence:
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+grafana:
+  service:
+    type: ClusterIP
+  persistence:
+    size: 1Gi
+
+anomalyDetector:
+  image:
+    tag: develop
+
+resourceQuota:
+  hard:
+    requests.cpu: "5"
+    requests.memory: 10Gi
+    limits.cpu: "10"
+    limits.memory: 20Gi

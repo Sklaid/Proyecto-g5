@@ -1,0 +1,73 @@
+# Production environment values
+
+global:
+  namespace: observability-prod
+  environment: production
+
+demoApp:
+  replicaCount: 3
+  image:
+    tag: stable
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+  env:
+    NODE_ENV: production
+
+prometheus:
+  persistence:
+    size: 20Gi
+  retention: 30d
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+    limits:
+      cpu: 2000m
+      memory: 8Gi
+
+tempo:
+  persistence:
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+grafana:
+  service:
+    type: LoadBalancer
+  persistence:
+    size: 5Gi
+  admin:
+    existingSecret: grafana-admin
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+anomalyDetector:
+  image:
+    tag: stable
+
+resourceQuota:
+  hard:
+    requests.cpu: "20"
+    requests.memory: 40Gi
+    limits.cpu: "40"
+    limits.memory: 80Gi
+    persistentvolumeclaims: "20"

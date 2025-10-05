@@ -1,0 +1,118 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AIOps & SRE Observability Platform
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Environment: {{ .Values.global.environment }}
+Namespace: {{ .Values.global.namespace }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Access Information
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{- if .Values.grafana.enabled }}
+
+1. Grafana Dashboard:
+
+{{- if eq .Values.grafana.service.type "LoadBalancer" }}
+   Get the LoadBalancer IP:
+   
+   $ kubectl get svc {{ .Release.Name }}-grafana -n {{ .Values.global.namespace }}
+   
+   Access Grafana at: http://<EXTERNAL-IP>:{{ .Values.grafana.service.port }}
+{{- else }}
+   Port-forward to access Grafana:
+   
+   $ kubectl port-forward svc/{{ .Release.Name }}-grafana {{ .Values.grafana.service.port }}:{{ .Values.grafana.service.port }} -n {{ .Values.global.namespace }}
+   
+   Access Grafana at: http://localhost:{{ .Values.grafana.service.port }}
+{{- end }}
+
+   Default credentials:
+   - Username: {{ .Values.grafana.admin.user }}
+   - Password: {{ .Values.grafana.admin.password }}
+   
+   ⚠️  Change the default password after first login!
+
+{{- end }}
+
+{{- if .Values.prometheus.enabled }}
+
+2. Prometheus:
+
+   Port-forward to access Prometheus:
+   
+   $ kubectl port-forward svc/{{ .Release.Name }}-prometheus {{ .Values.prometheus.service.port }}:{{ .Values.prometheus.service.port }} -n {{ .Values.global.namespace }}
+   
+   Access Prometheus at: http://localhost:{{ .Values.prometheus.service.port }}
+
+{{- end }}
+
+{{- if .Values.tempo.enabled }}
+
+3. Tempo:
+
+   Port-forward to access Tempo:
+   
+   $ kubectl port-forward svc/{{ .Release.Name }}-tempo {{ .Values.tempo.service.ports.http }}:{{ .Values.tempo.service.ports.http }} -n {{ .Values.global.namespace }}
+   
+   Access Tempo at: http://localhost:{{ .Values.tempo.service.ports.http }}
+
+{{- end }}
+
+{{- if .Values.demoApp.enabled }}
+
+4. Demo Application:
+
+   Port-forward to access the demo app:
+   
+   $ kubectl port-forward svc/{{ .Release.Name }}-demo-app {{ .Values.demoApp.service.port }}:{{ .Values.demoApp.service.port }} -n {{ .Values.global.namespace }}
+   
+   Access Demo App at: http://localhost:{{ .Values.demoApp.service.port }}
+
+{{- end }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Monitoring
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Check the status of your deployment:
+
+  $ kubectl get pods -n {{ .Values.global.namespace }}
+  $ kubectl get svc -n {{ .Values.global.namespace }}
+  $ kubectl get pvc -n {{ .Values.global.namespace }}
+
+{{- if .Values.demoApp.autoscaling.enabled }}
+
+Check HorizontalPodAutoscaler:
+
+  $ kubectl get hpa -n {{ .Values.global.namespace }}
+
+{{- end }}
+
+View logs:
+
+  $ kubectl logs -f deployment/{{ .Release.Name }}-demo-app -n {{ .Values.global.namespace }}
+  $ kubectl logs -f statefulset/{{ .Release.Name }}-prometheus -n {{ .Values.global.namespace }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Next Steps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Access Grafana and explore the pre-configured dashboards
+2. Generate traffic to the demo app to see metrics and traces
+3. Configure alerts based on your SLOs
+4. Customize the anomaly detection thresholds
+
+For more information, visit:
+  https://github.com/Sklaid/Proyecto-g5
+
+Happy Observing! 🎉

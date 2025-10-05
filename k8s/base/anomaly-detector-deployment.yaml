@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anomaly-detector
+  namespace: observability
+  labels:
+    app: anomaly-detector
+    component: ml-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anomaly-detector
+  template:
+    metadata:
+      labels:
+        app: anomaly-detector
+        component: ml-service
+    spec:
+      containers:
+      - name: anomaly-detector
+        image: ghcr.io/sklaid/proyecto-g5/anomaly-detector:latest
+        imagePullPolicy: Always
+        env:
+        - name: PROMETHEUS_URL
+          value: "http://prometheus:9090"
+        - name: CHECK_INTERVAL
+          value: "300"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+      volumes:
+      - name: config
+        configMap:
+          name: anomaly-detector-config
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anomaly-detector
+  namespace: observability
+  labels:
+    app: anomaly-detector
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: anomaly-detector
