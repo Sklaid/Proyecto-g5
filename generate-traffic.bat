@@ -1,59 +1,41 @@
 @echo off
 echo ========================================
-echo   Generador de Trafico - Demo App
+echo  Generating Traffic to Demo App
 echo ========================================
 echo.
 
-echo [1/4] Verificando que la aplicacion este corriendo...
-curl -s http://localhost:3000/health > nul
-if %errorlevel% neq 0 (
-    echo ERROR: La aplicacion no esta corriendo en http://localhost:3000
-    echo Ejecuta: docker-compose up -d
-    pause
-    exit /b 1
-)
-echo OK - Aplicacion corriendo!
+set DEMO_URL=http://localhost:3000
+
+echo [1/4] Testing health endpoint...
+curl -s %DEMO_URL%/health
 echo.
 
-echo [2/4] Generando requests normales (40 requests)...
-for /L %%i in (1,1,20) do (
-    curl -s http://localhost:3000/api/users > nul
-    curl -s http://localhost:3000/api/products > nul
-    if %%i LSS 20 timeout /t 1 /nobreak > nul
+echo [2/4] Generating normal traffic (100 requests)...
+for /L %%i in (1,1,100) do (
+    curl -s %DEMO_URL%/api/users > nul
+    curl -s %DEMO_URL%/api/products > nul
+    if %%i==25 echo   25%% complete...
+    if %%i==50 echo   50%% complete...
+    if %%i==75 echo   75%% complete...
 )
-echo OK - Requests normales generados
+echo   100%% complete!
 echo.
 
-echo [3/4] Generando errores 500 (10 requests)...
+echo [3/4] Generating some errors (10 requests)...
 for /L %%i in (1,1,10) do (
-    curl -s http://localhost:3000/api/error/500 > nul
-    if %%i LSS 10 timeout /t 1 /nobreak > nul
+    curl -s %DEMO_URL%/api/error > nul
 )
-echo OK - Errores 500 generados
+echo   Done!
 echo.
 
-echo [4/4] Generando excepciones (5 requests)...
-for /L %%i in (1,1,5) do (
-    curl -s http://localhost:3000/api/error/exception > nul
-    if %%i LSS 5 timeout /t 1 /nobreak > nul
-)
-echo OK - Excepciones generadas
-echo.
-
+echo [4/4] Summary
 echo ========================================
-echo   Trafico Generado Exitosamente!
-echo ========================================
+echo Total requests sent: 210
+echo   - Normal: 200
+echo   - Errors: 10
 echo.
-echo Total de requests: ~55
-echo - Requests exitosos: 40
-echo - Errores 500: 10
-echo - Excepciones: 5
-echo.
-echo Espera 30-60 segundos para que las metricas se procesen
-echo.
-echo Luego accede a Grafana:
-echo URL: http://localhost:3001
-echo Usuario: admin
-echo Password: admin
+echo Wait 30 seconds, then check:
+echo   - Grafana: http://localhost:3001
+echo   - Prometheus: http://localhost:9090
 echo.
 pause
