@@ -165,8 +165,10 @@ docker-compose ps
 ## Development
 
 ### Running Tests
+
+#### Unit Tests
 ```bash
-# Demo app tests
+# Demo app unit tests
 cd demo-app
 npm test
 
@@ -174,6 +176,44 @@ npm test
 cd anomaly-detector
 python -m pytest
 ```
+
+#### Integration Tests
+The integration tests verify the complete telemetry pipeline from the demo app through the collector to Prometheus and Tempo.
+
+**Quick Start (Windows):**
+```cmd
+cd demo-app
+run-integration-tests.bat
+```
+
+**Quick Start (Linux/Mac):**
+```bash
+cd demo-app
+chmod +x run-integration-tests.sh
+./run-integration-tests.sh
+```
+
+**Manual Execution:**
+```bash
+# 1. Start all services
+docker-compose up -d
+
+# 2. Wait for services to be ready (30 seconds)
+
+# 3. Run integration tests
+cd demo-app
+npm run test:integration
+```
+
+**What the integration tests verify:**
+- ✅ Collector receives OTLP metrics and traces from demo app
+- ✅ Metrics are exported in Prometheus format
+- ✅ Application and custom metrics appear in Prometheus
+- ✅ Traces are forwarded to Tempo with preserved context
+- ✅ Error traces are handled correctly
+- ✅ Complete end-to-end telemetry pipeline
+
+For detailed information, see [demo-app/INTEGRATION_TESTS.md](demo-app/INTEGRATION_TESTS.md)
 
 ### Building Docker Images
 ```bash

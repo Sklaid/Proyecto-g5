@@ -1,0 +1,255 @@
+# SLO Alert Rules for AIOps Platform
+# Multi-window multi-burn-rate alerting strategy (Google SRE best practices)
+# Requirements: 4.3, 6.3, 8.3
+
+groups:
+  - name: slo_burn_rate_alerts
+    interval: 1m
+    rules:
+      # Critical: Fast burn rate (exhausts error budget in < 2 days)
+      # Alert if burn rate > 14.4x for 1 hour AND > 14.4x for 5 minutes
+      - alert: ErrorBudgetBurnRateCritical
+        expr: |
+          (
+            sli:error_budget:burn_rate_1h > 14.4
+            and
+            sli:error_budget:burn_rate_1h offset 5m > 14.4
+          )
+        for: 2m
+        labels:
+          severity: critical
+          slo_type: availability
+          alert_type: burn_rate
+        annotations:
+          summary: "Critical error budget burn rate for {{ $labels.service_name }}"
+          description: "Error budget is being consumed at {{ $value | humanize }}x the acceptable rate. At this rate, the monthly budget will be exhausted in less than 2 days."
+          runbook_url: "https://sre.google/workbook/alerting-on-slos/"
+          dashboard_url: "http://localhost:3001/d/slo-dashboard"
+      
+      # High: Moderate burn rate (exhausts error budget in < 1 week)
+      # Alert if burn rate > 6x for 6 hours AND > 6x for 30 minutes
+      - alert: ErrorBudgetBurnRateHigh
+        expr: |
+          (
+            sli:error_budget:burn_rate_6h > 6
+            and
+            sli:error_budget:burn_rate_6h offset 30m > 6
+          )
+        for: 15m
+        labels:
+          severity: high
+          slo_type: availability
+          alert_type: burn_rate
+        annotations:
+          summary: "High error budget burn rate for {{ $labels.service_name }}"
+          description: "Error budget is being consumed at {{ $value | humanize }}x the acceptable rate. At this rate, the monthly budget will be exhausted in less than 1 week."
+          runbook_url: "https://sre.google/workbook/alerting-on-slos/"
+      
+      # Warning: Slow burn rate (exhausts error budget in < 1 month)
+      # Alert if burn rate > 3x for 24 hours AND > 3x for 2 hours
+      - alert: ErrorBudgetBurnRateWarning
+        expr: |
+          (
+            sli:error_budget:burn_rate_24h > 3
+            and
+            sli:error_budget:burn_rate_24h offset 2h > 3
+          )
+        for: 1h
+        labels:
+          severity: warning
+          slo_type: availability
+          alert_type: burn_rate
+        annotations:
+          summary: "Elevated error budget burn rate for {{ $labels.service_name }}"
+          description: "Error budget is being consumed at {{ $value | humanize }}x the acceptable rate. Monitor closely."
+
+  - name: slo_latency_alerts
+    interval: 1m
+    rules:
+      # Latency P95 exceeds SLI threshold
+      - alert: LatencyP95ExceedsThreshold
+        expr: sli:http_request_duration_seconds:p95 > 0.2
+        for: 5m
+        labels:
+          severity: high
+          slo_type: latency
+          alert_type: threshold
+        annotations:
+          summary: "P95 latency exceeds 200ms for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "P95 latency is {{ $value | humanize }}s (threshold: 200ms). This may impact user experience."
+          current_value: "{{ $value | humanize }}s"
+          threshold: "200ms"
+      
+      # Latency P99 exceeds critical threshold
+      - alert: LatencyP99Critical
+        expr: sli:http_request_duration_seconds:p99 > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          slo_type: latency
+          alert_type: threshold
+        annotations:
+          summary: "P99 latency critically high for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "P99 latency is {{ $value | humanize }}s (threshold: 500ms). Immediate investigation required."
+          current_value: "{{ $value | humanize }}s"
+          threshold: "500ms"
+      
+      # Latency SLO compliance below target
+      - alert: LatencySLOComplianceLow
+        expr: sli:latency_slo:compliance_percent < 99.9
+        for: 10m
+        labels:
+          severity: warning
+          slo_type: latency
+          alert_type: slo_compliance
+        annotations:
+          summary: "Latency SLO compliance below target for {{ $labels.service_name }}"
+          description: "Only {{ $value | humanize }}% of requests meet the latency SLO (target: 99.9%)."
+          current_value: "{{ $value | humanize }}%"
+          target: "99.9%"
+
+  - name: slo_error_rate_alerts
+    interval: 1m
+    rules:
+      # Error rate exceeds 1%
+      - alert: ErrorRateHigh
+        expr: sli:http_requests:error_rate_percent > 1
+        for: 5m
+        labels:
+          severity: high
+          slo_type: availability
+          alert_type: error_rate
+        annotations:
+          summary: "Error rate exceeds 1% for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "Current error rate is {{ $value | humanize }}% (threshold: 1%). Investigate immediately."
+          current_value: "{{ $value | humanize }}%"
+          threshold: "1%"
+      
+      # Error rate exceeds 5% (critical)
+      - alert: ErrorRateCritical
+        expr: sli:http_requests:error_rate_percent > 5
+        for: 2m
+        labels:
+          severity: critical
+          slo_type: availability
+          alert_type: error_rate
+        annotations:
+          summary: "Critical error rate for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "Current error rate is {{ $value | humanize }}% (threshold: 5%). Service degradation likely."
+          current_value: "{{ $value | humanize }}%"
+          threshold: "5%"
+      
+      # 5xx error rate exceeds threshold
+      - alert: ServerErrorRateHigh
+        expr: sli:http_requests:5xx_error_rate_percent > 0.5
+        for: 5m
+        labels:
+          severity: high
+          slo_type: availability
+          alert_type: server_error
+        annotations:
+          summary: "Server error rate high for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "5xx error rate is {{ $value | humanize }}% (threshold: 0.5%). Check application logs."
+          current_value: "{{ $value | humanize }}%"
+          threshold: "0.5%"
+
+  - name: slo_availability_alerts
+    interval: 1m
+    rules:
+      # Success rate below SLO target
+      - alert: SuccessRateBelowSLO
+        expr: sli:http_requests:success_rate_percent < 99.9
+        for: 10m
+        labels:
+          severity: high
+          slo_type: availability
+          alert_type: slo_compliance
+        annotations:
+          summary: "Success rate below SLO for {{ $labels.service_name }}{{ $labels.http_route }}"
+          description: "Success rate is {{ $value | humanize }}% (target: 99.9%). SLO breach in progress."
+          current_value: "{{ $value | humanize }}%"
+          target: "99.9%"
+      
+      # No requests received (service might be down)
+      - alert: NoRequestsReceived
+        expr: rate(http_server_requests_total[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+          slo_type: availability
+          alert_type: no_traffic
+        annotations:
+          summary: "No requests received for {{ $labels.service_name }}"
+          description: "Service has not received any requests in the last 5 minutes. Check if service is down or unreachable."
+
+  - name: slo_throughput_alerts
+    interval: 1m
+    rules:
+      # Request rate dropped significantly
+      - alert: RequestRateDropped
+        expr: |
+          (
+            sli:http_requests_per_second:by_service
+            <
+            sli:http_requests_per_second:by_service offset 1h * 0.5
+          )
+          and
+          sli:http_requests_per_second:by_service offset 1h > 1
+        for: 10m
+        labels:
+          severity: warning
+          slo_type: throughput
+          alert_type: rate_drop
+        annotations:
+          summary: "Request rate dropped significantly for {{ $labels.service_name }}"
+          description: "Current request rate is {{ $value | humanize }} req/s, which is less than 50% of the rate 1 hour ago."
+      
+      # Request rate spike (potential DDoS or traffic surge)
+      - alert: RequestRateSpike
+        expr: |
+          (
+            sli:http_requests_per_second:by_service
+            >
+            sli:http_requests_per_second:by_service offset 1h * 3
+          )
+          and
+          sli:http_requests_per_second:by_service > 10
+        for: 5m
+        labels:
+          severity: warning
+          slo_type: throughput
+          alert_type: rate_spike
+        annotations:
+          summary: "Request rate spike detected for {{ $labels.service_name }}"
+          description: "Current request rate is {{ $value | humanize }} req/s, which is 3x higher than 1 hour ago. Monitor for capacity issues."
+
+  - name: slo_resource_alerts
+    interval: 1m
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: sli:process_cpu_usage:avg > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          slo_type: resource
+          alert_type: cpu
+        annotations:
+          summary: "High CPU usage for {{ $labels.service_name }}"
+          description: "CPU usage is {{ $value | humanizePercentage }} (threshold: 80%). May impact performance."
+          current_value: "{{ $value | humanizePercentage }}"
+          threshold: "80%"
+      
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: sli:process_memory_usage_bytes:avg > 1073741824
+        for: 10m
+        labels:
+          severity: warning
+          slo_type: resource
+          alert_type: memory
+        annotations:
+          summary: "High memory usage for {{ $labels.service_name }}"
+          description: "Memory usage is {{ $value | humanize1024 }}B (threshold: 1GB). Monitor for memory leaks."
+          current_value: "{{ $value | humanize1024 }}B"
+          threshold: "1GB"

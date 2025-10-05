@@ -1,0 +1,228 @@
+# SLI Recording Rules for AIOps Platform
+# These rules pre-calculate SLI metrics for better dashboard performance
+# Requirements: 2.2, 2.3, 4.2, 4.3
+
+groups:
+  - name: sli_latency_rules
+    interval: 30s
+    rules:
+      # Request duration percentiles (P50, P95, P99)
+      # These are calculated from histogram buckets
+      
+      - record: sli:http_request_duration_seconds:p50
+        expr: histogram_quantile(0.50, sum(rate(http_server_request_duration_milliseconds_bucket[5m])) by (le, service_name, http_route))
+        labels:
+          sli_type: "latency"
+          percentile: "p50"
+      
+      - record: sli:http_request_duration_seconds:p95
+        expr: histogram_quantile(0.95, sum(rate(http_server_request_duration_milliseconds_bucket[5m])) by (le, service_name, http_route))
+        labels:
+          sli_type: "latency"
+          percentile: "p95"
+      
+      - record: sli:http_request_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum(rate(http_server_request_duration_milliseconds_bucket[5m])) by (le, service_name, http_route))
+        labels:
+          sli_type: "latency"
+          percentile: "p99"
+      
+      # Average request duration
+      - record: sli:http_request_duration_seconds:avg
+        expr: sum(rate(http_server_request_duration_milliseconds_sum[5m])) by (service_name, http_route) / sum(rate(http_server_request_duration_milliseconds_count[5m])) by (service_name, http_route)
+        labels:
+          sli_type: "latency"
+
+  - name: sli_error_rate_rules
+    interval: 30s
+    rules:
+      # Error rate calculation (4xx and 5xx errors)
+      
+      # Total requests per second
+      - record: sli:http_requests:rate
+        expr: sum(rate(http_server_requests_total[5m])) by (service_name, http_route)
+        labels:
+          sli_type: "availability"
+      
+      # Error requests per second (status >= 400)
+      - record: sli:http_requests_errors:rate
+        expr: sum(rate(http_server_requests_total{http_status_code=~"4..|5.."}[5m])) by (service_name, http_route)
+        labels:
+          sli_type: "availability"
+      
+      # Error rate as percentage
+      - record: sli:http_requests:error_rate_percent
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code=~"4..|5.."}[5m])) by (service_name, http_route)
+            /
+            sum(rate(http_server_requests_total[5m])) by (service_name, http_route)
+          ) * 100
+        labels:
+          sli_type: "availability"
+      
+      # Success rate as percentage (inverse of error rate)
+      - record: sli:http_requests:success_rate_percent
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code!~"4..|5.."}[5m])) by (service_name, http_route)
+            /
+            sum(rate(http_server_requests_total[5m])) by (service_name, http_route)
+          ) * 100
+        labels:
+          sli_type: "availability"
+      
+      # 5xx error rate (server errors only)
+      - record: sli:http_requests:5xx_error_rate_percent
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code=~"5.."}[5m])) by (service_name, http_route)
+            /
+            sum(rate(http_server_requests_total[5m])) by (service_name, http_route)
+          ) * 100
+        labels:
+          sli_type: "availability"
+          error_type: "server"
+
+  - name: sli_request_rate_rules
+    interval: 30s
+    rules:
+      # Request rate aggregation (throughput)
+      
+      # Total requests per second by service
+      - record: sli:http_requests_per_second:by_service
+        expr: sum(rate(http_server_requests_total[5m])) by (service_name)
+        labels:
+          sli_type: "throughput"
+      
+      # Total requests per second by endpoint
+      - record: sli:http_requests_per_second:by_endpoint
+        expr: sum(rate(http_server_requests_total[5m])) by (service_name, http_route)
+        labels:
+          sli_type: "throughput"
+      
+      # Total requests per second by status code
+      - record: sli:http_requests_per_second:by_status
+        expr: sum(rate(http_server_requests_total[5m])) by (service_name, http_status_code)
+        labels:
+          sli_type: "throughput"
+      
+      # Request count over time windows (for SLO calculations)
+      - record: sli:http_requests_total:1h
+        expr: sum(increase(http_server_requests_total[1h])) by (service_name, http_route)
+        labels:
+          sli_type: "throughput"
+          window: "1h"
+      
+      - record: sli:http_requests_total:24h
+        expr: sum(increase(http_server_requests_total[24h])) by (service_name, http_route)
+        labels:
+          sli_type: "throughput"
+          window: "24h"
+      
+      - record: sli:http_requests_total:7d
+        expr: sum(increase(http_server_requests_total[7d])) by (service_name, http_route)
+        labels:
+          sli_type: "throughput"
+          window: "7d"
+
+  - name: sli_slo_calculations
+    interval: 1m
+    rules:
+      # SLO-specific calculations for error budget tracking
+      
+      # Error budget consumption rate (burn rate)
+      # Burn rate = (actual error rate) / (error budget rate)
+      # For 99.9% SLO, error budget = 0.1% = 0.001
+      
+      - record: sli:error_budget:burn_rate_1h
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code=~"5.."}[1h])) by (service_name)
+            /
+            sum(rate(http_server_requests_total[1h])) by (service_name)
+          ) / 0.001
+        labels:
+          sli_type: "error_budget"
+          window: "1h"
+          slo_target: "99.9"
+      
+      - record: sli:error_budget:burn_rate_6h
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code=~"5.."}[6h])) by (service_name)
+            /
+            sum(rate(http_server_requests_total[6h])) by (service_name)
+          ) / 0.001
+        labels:
+          sli_type: "error_budget"
+          window: "6h"
+          slo_target: "99.9"
+      
+      - record: sli:error_budget:burn_rate_24h
+        expr: |
+          (
+            sum(rate(http_server_requests_total{http_status_code=~"5.."}[24h])) by (service_name)
+            /
+            sum(rate(http_server_requests_total[24h])) by (service_name)
+          ) / 0.001
+        labels:
+          sli_type: "error_budget"
+          window: "24h"
+          slo_target: "99.9"
+      
+      # Latency SLO compliance (% of requests under threshold)
+      # Assuming 200ms threshold for P95
+      - record: sli:latency_slo:compliance_percent
+        expr: |
+          (
+            sum(rate(http_server_request_duration_milliseconds_bucket{le="200"}[5m])) by (service_name)
+            /
+            sum(rate(http_server_request_duration_milliseconds_count[5m])) by (service_name)
+          ) * 100
+        labels:
+          sli_type: "latency_slo"
+          threshold_ms: "200"
+
+  - name: sli_custom_metrics
+    interval: 30s
+    rules:
+      # Custom business metrics aggregation
+      
+      # Request counter rate
+      - record: sli:request_counter:rate
+        expr: sum(rate(request_counter_total[5m])) by (service_name, endpoint, method)
+        labels:
+          sli_type: "custom"
+      
+      # Operation duration percentiles
+      - record: sli:operation_duration:p95
+        expr: histogram_quantile(0.95, sum(rate(operation_duration_milliseconds_bucket[5m])) by (le, operation))
+        labels:
+          sli_type: "custom"
+          percentile: "p95"
+      
+      - record: sli:operation_duration:p99
+        expr: histogram_quantile(0.99, sum(rate(operation_duration_milliseconds_bucket[5m])) by (le, operation))
+        labels:
+          sli_type: "custom"
+          percentile: "p99"
+
+  - name: sli_resource_utilization
+    interval: 30s
+    rules:
+      # Resource utilization metrics for capacity planning
+      
+      # CPU usage
+      - record: sli:process_cpu_usage:avg
+        expr: avg(process_cpu_usage) by (service_name)
+        labels:
+          sli_type: "resource"
+          resource: "cpu"
+      
+      # Memory usage
+      - record: sli:process_memory_usage_bytes:avg
+        expr: avg(process_memory_usage_bytes) by (service_name)
+        labels:
+          sli_type: "resource"
+          resource: "memory"

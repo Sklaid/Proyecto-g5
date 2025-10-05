@@ -84,28 +84,49 @@
     - Configure health checks
     - _Requirements: 1.3, 2.1, 3.1_
   
-  - [ ]* 3.3 Write integration tests for Collector
+  - [x] 3.3 Write integration tests for Collector
+
+
+
+
+
+
     - Test that Collector receives OTLP data from demo app
     - Test that metrics are exported to Prometheus format
     - Test that traces are forwarded to Tempo
     - _Requirements: 1.3, 2.1, 3.1_
 
-- [ ] 4. Set up Prometheus for metrics storage
-  - [ ] 4.1 Create Prometheus configuration
+- [x] 4. Set up Prometheus for metrics storage
+
+
+
+
+  - [x] 4.1 Create Prometheus configuration
+
+
     - Write prometheus.yml with scrape configs for OTel Collector
     - Configure retention period (15 days)
     - Set scrape interval to 15 seconds
     - Add self-monitoring scrape config
     - _Requirements: 2.1, 2.2, 2.3, 4.1_
   
-  - [ ] 4.2 Add Prometheus service to Docker Compose
+
+  - [x] 4.2 Add Prometheus service to Docker Compose
+
+
+
+
+
     - Define prometheus service with official image
     - Mount configuration and create persistent volume for data
     - Expose port 9090
     - Configure resource limits
     - _Requirements: 2.1, 2.2, 4.1_
   
-  - [ ] 4.3 Create recording rules for SLI calculations
+  - [x] 4.3 Create recording rules for SLI calculations
+
+
+
     - Write recording rules for latency percentiles (P50, P95, P99)
     - Create rules for error rate calculation
     - Add rules for request rate aggregation
