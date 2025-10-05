@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --only=production --legacy-peer-deps || npm install --only=production
 
 # Stage 2: Production stage
 FROM node:18-alpine
