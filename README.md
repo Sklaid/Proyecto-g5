@@ -1,6 +1,6 @@
 # Plataforma de Observabilidad AIOps & SRE
 
-[![Pipeline CI/CD](https://github.com/Sklaid/aiops-platform/workflows/CI/badge.svg)](https://github.com/Sklaid/aiops-platform/actions)
+[![Pipeline CI/CD](https://github.com/Sklaid/Proyecto-g5/workflows/Main%20CI/CD%20Pipeline/badge.svg)](https://github.com/Sklaid/Proyecto-g5/actions)
 [![Licencia](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Una plataforma de observabilidad y AIOps lista para producción que combina instrumentación moderna con OpenTelemetry, monitoreo basado en SLI/SLO y detección inteligente de anomalías para reducir el Tiempo Medio de Recuperación (MTTR) hasta en un 70%.
@@ -123,8 +123,8 @@ Antes de comenzar, asegúrate de tener:
 #### Paso 1: Clonar y Navegar
 
 ```bash
-git clone https://github.com/Sklaid/aiops-sre-observability.git
-cd aiops-sre-observability
+git clone https://github.com/Sklaid/Proyecto-g5.git
+cd Proyecto-g5
 ```
 
 #### Paso 2: Iniciar Todos los Servicios
