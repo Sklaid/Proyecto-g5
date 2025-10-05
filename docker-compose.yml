@@ -42,6 +42,7 @@ services:
     ports:
       - "4317:4317"   # OTLP gRPC receiver
       - "4318:4318"   # OTLP HTTP receiver
+      - "8888:8888"   # Collector internal metrics
       - "8889:8889"   # Prometheus metrics exporter
     networks:
       - observability-network
@@ -83,7 +84,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # Tempo - Will be configured in task 5
+  # Tempo - Configured in task 5
   tempo:
     image: grafana/tempo:latest
     container_name: tempo
@@ -92,8 +93,9 @@ services:
       - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml
       - tempo-data:/var/tempo
     ports:
-      - "3200:3200"   # Tempo HTTP
-      - "4317"        # OTLP gRPC receiver
+      - "3200:3200"   # Tempo HTTP API
+      - "9411:4317"   # OTLP gRPC receiver (mapped to avoid conflict with otel-collector)
+      - "9412:4318"   # OTLP HTTP receiver (mapped to avoid conflict with otel-collector)
     networks:
       - observability-network
     healthcheck:
