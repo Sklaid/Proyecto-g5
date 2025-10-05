@@ -1,50 +1,50 @@
-# AIOps & SRE Observability Platform
+# Plataforma de Observabilidad AIOps & SRE
 
-[![CI/CD Pipeline](https://github.com/your-org/aiops-platform/workflows/CI/badge.svg)](https://github.com/your-org/aiops-platform/actions)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Pipeline CI/CD](https://github.com/Sklaid/aiops-platform/workflows/CI/badge.svg)](https://github.com/Sklaid/aiops-platform/actions)
+[![Licencia](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A production-ready observability and AIOps platform that combines modern instrumentation with OpenTelemetry, SLI/SLO-based monitoring, and intelligent anomaly detection to reduce Mean Time To Recovery (MTTR) by up to 70%.
+Una plataforma de observabilidad y AIOps lista para producción que combina instrumentación moderna con OpenTelemetry, monitoreo basado en SLI/SLO y detección inteligente de anomalías para reducir el Tiempo Medio de Recuperación (MTTR) hasta en un 70%.
 
 **📚 [Ver Índice Completo de Documentación](DOCUMENTATION_INDEX.md)** | **✅ [Estado de Validación](docs/validation-reports/VALIDATION_INDEX.md)** | **🚀 [Guía de Inicio Rápido](docs/guides/QUICK_START.md)**
 
-## 🎯 Overview
+## 🎯 Descripción General
 
-This platform provides **complete end-to-end observability** for distributed applications by implementing the three pillars of observability (Metrics, Traces, Logs) and adding intelligent anomaly detection on top.
+Esta plataforma proporciona **observabilidad completa de extremo a extremo** para aplicaciones distribuidas implementando los tres pilares de la observabilidad (Métricas, Trazas, Logs) y agregando detección inteligente de anomalías.
 
-### Key Capabilities
+### Capacidades Clave
 
-- **📊 OpenTelemetry Instrumentation**: Vendor-neutral, standardized collection of metrics and distributed traces
-- **💾 Metrics Storage**: Prometheus for time-series metrics with configurable retention (default: 15 days)
-- **🔍 Trace Storage**: Grafana Tempo for efficient distributed tracing storage
-- **📈 Visualization**: Pre-configured Grafana dashboards for SLIs, SLOs, error budgets, and application performance
-- **🚨 Intelligent Alerting**: SLO-driven multi-window alerts and ML-based anomaly detection
-- **🤖 AIOps**: Automated anomaly detection using Isolation Forest algorithm
-- **🔄 CI/CD Integration**: Complete GitHub Actions pipeline with automated testing and deployment
-- **☸️ Cloud Native**: Ready for Kubernetes deployment with Helm charts and Kustomize overlays
+- **📊 Instrumentación OpenTelemetry**: Recopilación estandarizada y neutral de métricas y trazas distribuidas
+- **💾 Almacenamiento de Métricas**: Prometheus para métricas de series temporales con retención configurable (predeterminado: 15 días)
+- **🔍 Almacenamiento de Trazas**: Grafana Tempo para almacenamiento eficiente de trazas distribuidas
+- **📈 Visualización**: Dashboards preconfigurados de Grafana para SLIs, SLOs, presupuestos de error y rendimiento de aplicaciones
+- **🚨 Alertas Inteligentes**: Alertas multi-ventana basadas en SLO y detección de anomalías basada en ML
+- **🤖 AIOps**: Detección automática de anomalías usando algoritmo Isolation Forest
+- **🔄 Integración CI/CD**: Pipeline completo de GitHub Actions con pruebas y despliegue automatizados
+- **☸️ Cloud Native**: Listo para despliegue en Kubernetes con Helm charts y overlays de Kustomize
 
-### Why This Platform?
+### ¿Por Qué Esta Plataforma?
 
-**Problem:** Traditional monitoring tells you *what* is broken, but not *why* or *how to fix it quickly*.
+**Problema:** El monitoreo tradicional te dice *qué* está roto, pero no *por qué* o *cómo arreglarlo rápidamente*.
 
-**Solution:** This platform provides:
-- **Faster incident detection** (< 5 minutes vs hours)
-- **Rapid root cause analysis** (< 15 minutes with distributed tracing)
-- **Proactive alerting** (detect issues before users notice)
-- **Reduced MTTR** (70-80% improvement documented)
+**Solución:** Esta plataforma proporciona:
+- **Detección más rápida de incidentes** (< 5 minutos vs horas)
+- **Análisis rápido de causa raíz** (< 15 minutos con trazas distribuidas)
+- **Alertas proactivas** (detecta problemas antes de que los usuarios los noten)
+- **MTTR reducido** (mejora del 70-80% documentada)
 
-## Architecture
+## Arquitectura
 
 ```
 ┌─────────────────┐
 │   Demo App      │ ──┐
-│  (Node.js)      │   │ Metrics & Traces
+│  (Node.js)      │   │ Métricas y Trazas
 └─────────────────┘   │
                       ▼
               ┌──────────────────┐
               │ OTel Collector   │
               └──────────────────┘
                    │         │
-        Metrics    │         │    Traces
+        Métricas   │         │    Trazas
                    ▼         ▼
             ┌──────────┐  ┌──────────┐
             │Prometheus│  │  Tempo   │
@@ -53,91 +53,91 @@ This platform provides **complete end-to-end observability** for distributed app
                    └────┬────┘
                         ▼
                  ┌─────────────┐
-                 │   Grafana   │ ◄── Dashboards & Alerts
+                 │   Grafana   │ ◄── Dashboards y Alertas
                  └─────────────┘
                         ▲
-                        │ Anomaly Alerts
+                        │ Alertas de Anomalías
                  ┌─────────────┐
-                 │  Anomaly    │
                  │  Detector   │
+                 │  Anomalías  │
                  └─────────────┘
 ```
 
-## Components
+## Componentes
 
-### Demo Application
-- Node.js Express application with OpenTelemetry instrumentation
-- Exports metrics (CPU, memory, request count, duration)
-- Generates distributed traces with context propagation
-- Simulates realistic traffic patterns and error scenarios
+### Aplicación Demo
+- Aplicación Node.js Express con instrumentación OpenTelemetry
+- Exporta métricas (CPU, memoria, conteo de solicitudes, duración)
+- Genera trazas distribuidas con propagación de contexto
+- Simula patrones de tráfico realistas y escenarios de error
 
 ### OpenTelemetry Collector
-- Receives telemetry via OTLP (gRPC and HTTP)
-- Processes data with batching and memory limiting
-- Exports metrics to Prometheus and traces to Tempo
+- Recibe telemetría vía OTLP (gRPC y HTTP)
+- Procesa datos con batching y limitación de memoria
+- Exporta métricas a Prometheus y trazas a Tempo
 
 ### Prometheus
-- Stores time-series metrics with 15-day retention
-- Provides PromQL query interface
-- Supports recording rules for SLI calculations
+- Almacena métricas de series temporales con retención de 15 días
+- Proporciona interfaz de consulta PromQL
+- Soporta reglas de grabación para cálculos de SLI
 
 ### Tempo
-- Stores distributed traces efficiently
-- Provides trace query API
-- Integrates with Grafana for visualization
+- Almacena trazas distribuidas eficientemente
+- Proporciona API de consulta de trazas
+- Se integra con Grafana para visualización
 
 ### Grafana
-- Pre-configured dashboards for:
-  - SLI/SLO monitoring with error budgets
-  - Application performance metrics
-  - Distributed tracing visualization
-- Alert rules for SLO breaches and anomalies
-- Datasources for Prometheus and Tempo
+- Dashboards preconfigurados para:
+  - Monitoreo SLI/SLO con presupuestos de error
+  - Métricas de rendimiento de aplicaciones
+  - Visualización de trazas distribuidas
+- Reglas de alerta para violaciones de SLO y anomalías
+- Datasources para Prometheus y Tempo
 
-### Anomaly Detector
-- Python service using Holt-Winters algorithm
-- Detects anomalies in metrics automatically
-- Generates alerts with confidence levels
-- Reduces MTTR through predictive insights
+### Detector de Anomalías
+- Servicio Python usando algoritmo Holt-Winters
+- Detecta anomalías en métricas automáticamente
+- Genera alertas con niveles de confianza
+- Reduce MTTR a través de insights predictivos
 
-## 🚀 Quick Start
+## 🚀 Inicio Rápido
 
-### Prerequisites
+### Prerrequisitos
 
-Before you begin, ensure you have:
+Antes de comenzar, asegúrate de tener:
 
-- **Docker** (version 20.10+) and **Docker Compose** (version 2.0+) installed
-- At least **4GB of available RAM** (8GB recommended for production-like testing)
-- The following **ports available**:
-  - `3000` - Demo Application
+- **Docker** (versión 20.10+) y **Docker Compose** (versión 2.0+) instalados
+- Al menos **4GB de RAM disponible** (8GB recomendado para pruebas similares a producción)
+- Los siguientes **puertos disponibles**:
+  - `3000` - Aplicación Demo
   - `3001` - Grafana
   - `4317` - OTel Collector (gRPC)
   - `4318` - OTel Collector (HTTP)
-  - `8889` - OTel Collector (Prometheus exporter)
+  - `8889` - OTel Collector (exportador Prometheus)
   - `9090` - Prometheus
   - `3200` - Tempo
-- **Git** for cloning the repository
+- **Git** para clonar el repositorio
 
-### 🐳 Local Deployment with Docker Compose
+### 🐳 Despliegue Local con Docker Compose
 
-#### Step 1: Clone and Navigate
+#### Paso 1: Clonar y Navegar
 
 ```bash
-git clone https://github.com/your-org/aiops-sre-observability.git
+git clone https://github.com/Sklaid/aiops-sre-observability.git
 cd aiops-sre-observability
 ```
 
-#### Step 2: Start All Services
+#### Paso 2: Iniciar Todos los Servicios
 
 ```bash
-# Start all services in detached mode
+# Iniciar todos los servicios en modo desacoplado
 docker-compose up -d
 
-# Watch the logs (optional)
+# Ver los logs (opcional)
 docker-compose logs -f
 ```
 
-**Expected output:**
+**Salida esperada:**
 ```
 ✔ Container demo-app           Started
 ✔ Container otel-collector     Started
@@ -147,23 +147,23 @@ docker-compose logs -f
 ✔ Container anomaly-detector   Started
 ```
 
-#### Step 3: Verify Services are Running
+#### Paso 3: Verificar que los Servicios Están Ejecutándose
 
 ```bash
-# Check service status
+# Verificar estado de servicios
 docker-compose ps
 
-# All services should show "Up" status
+# Todos los servicios deben mostrar estado "Up"
 ```
 
-#### Step 4: Generate Sample Traffic
+#### Paso 4: Generar Tráfico de Muestra
 
 ```powershell
 # Windows PowerShell
-.\generate-continuous-traffic.ps1 -DurationSeconds 60 -RequestsPerSecond 5
+.\scripts\traffic-generation\generate-continuous-traffic.ps1 -DurationSeconds 60 -RequestsPerSecond 5
 
-# Or use the batch file
-.\generate-traffic.bat
+# O usar el archivo batch
+.\scripts\traffic-generation\generate-traffic.bat
 ```
 
 ```bash
@@ -172,403 +172,407 @@ curl http://localhost:3000/api/users
 curl http://localhost:3000/api/products
 ```
 
-#### Step 5: Access the Services
+#### Paso 5: Acceder a los Servicios
 
-| Service | URL | Credentials | Purpose |
+| Servicio | URL | Credenciales | Propósito |
 |---------|-----|-------------|---------|
-| **Grafana** | http://localhost:3001 | `admin` / `grupo5_devops` | Dashboards & Visualization |
-| **Prometheus** | http://localhost:9090 | None | Metrics Query Interface |
-| **Tempo** | http://localhost:3200 | None | Trace Query API |
-| **Demo App** | http://localhost:3000 | None | Instrumented Application |
+| **Grafana** | http://localhost:3001 | `admin` / `grupo5_devops` | Dashboards y Visualización |
+| **Prometheus** | http://localhost:9090 | Ninguna | Interfaz de Consulta de Métricas |
+| **Tempo** | http://localhost:3200 | Ninguna | API de Consulta de Trazas |
+| **Demo App** | http://localhost:3000 | Ninguna | Aplicación Instrumentada |
 
-### 📊 Accessing Grafana Dashboards
+### 📊 Accediendo a los Dashboards de Grafana
 
-1. **Open Grafana**: Navigate to http://localhost:3001
-2. **Login**: Use credentials `admin` / `grupo5_devops`
-3. **View Dashboards**: Click on the menu (☰) → Dashboards
+1. **Abrir Grafana**: Navegar a http://localhost:3001
+2. **Iniciar Sesión**: Usar credenciales `admin` / `grupo5_devops`
+3. **Ver Dashboards**: Hacer clic en el menú (☰) → Dashboards
 
-**Available Dashboards:**
+**Dashboards Disponibles:**
 
-| Dashboard | URL | Description |
+| Dashboard | URL | Descripción |
 |-----------|-----|-------------|
-| **SLI/SLO Dashboard** | http://localhost:3001/d/slo-dashboard | Monitor SLIs, SLOs, error budgets, and burn rates |
-| **Application Performance** | http://localhost:3001/d/app-performance-dashboard | Request latency, throughput, errors, and resource utilization |
-| **Distributed Tracing** | http://localhost:3001/d/distributed-tracing | Trace analysis and service dependencies |
+| **Dashboard SLI/SLO** | http://localhost:3001/d/slo-dashboard | Monitorear SLIs, SLOs, presupuestos de error y tasas de consumo |
+| **Rendimiento de Aplicación** | http://localhost:3001/d/app-performance-dashboard | Latencia de solicitudes, throughput, errores y utilización de recursos |
+| **Trazas Distribuidas** | http://localhost:3001/d/distributed-tracing | Análisis de trazas y dependencias de servicios |
 
-4. **Explore Traces**: Navigate to Explore (compass icon) → Select Tempo datasource → Query: `{status=error}`
+4. **Explorar Trazas**: Navegar a Explore (ícono de brújula) → Seleccionar datasource Tempo → Query: `{status=error}`
 
-### 🎬 Quick Demo Script
+### 🎬 Script de Demo Rápido
 
-Want to see the platform in action? Run this demo:
+¿Quieres ver la plataforma en acción? Ejecuta esta demo:
 
 ```powershell
-# 1. Generate normal traffic for 30 seconds
-.\generate-continuous-traffic.ps1 -DurationSeconds 30 -RequestsPerSecond 5
+# 1. Generar tráfico normal por 30 segundos
+.\scripts\traffic-generation\generate-continuous-traffic.ps1 -DurationSeconds 30 -RequestsPerSecond 5
 
-# 2. Generate some errors
-.\generate-test-errors.ps1 -ErrorCount 10 -DelaySeconds 1
+# 2. Generar algunos errores
+.\scripts\traffic-generation\generate-test-errors.ps1 -ErrorCount 10 -DelaySeconds 1
 
-# 3. Generate mixed traffic (normal + errors)
-.\generate-mixed-traffic.ps1 -DurationSeconds 60 -ErrorRatePercent 15
+# 3. Generar tráfico mixto (normal + errores)
+.\scripts\traffic-generation\generate-mixed-traffic.ps1 -DurationSeconds 60 -ErrorRatePercent 15
 
-# 4. Open all dashboards
-.\open-all-dashboards.bat
+# 4. Abrir todos los dashboards
+.\scripts\utilities\open-all-dashboards.bat
 ```
 
-Now watch the dashboards update in real-time!
+¡Ahora observa cómo los dashboards se actualizan en tiempo real!
 
-## 📁 Project Structure
+## 📁 Estructura del Proyecto
 
 ```
 aiops-sre-observability/
 ├── .github/
-│   └── workflows/              # GitHub Actions CI/CD pipelines
-│       └── main-pipeline.yml   # Main CI/CD workflow
-├── demo-app/                   # Node.js demo application
+│   └── workflows/              # Pipelines CI/CD de GitHub Actions
+│       └── main-pipeline.yml   # Workflow principal de CI/CD
+├── demo-app/                   # Aplicación demo Node.js
 │   ├── src/
-│   │   ├── index.js           # Main application with OTel instrumentation
-│   │   ├── tracing.js         # OpenTelemetry tracing configuration
-│   │   └── metrics.js         # Custom metrics definitions
-│   ├── Dockerfile             # Multi-stage Docker build
-│   ├── package.json           # Node.js dependencies
-│   └── README.md              # Demo app documentation
+│   │   ├── index.js           # Aplicación principal con instrumentación OTel
+│   │   ├── tracing.js         # Configuración de tracing OpenTelemetry
+│   │   └── metrics.js         # Definiciones de métricas personalizadas
+│   ├── Dockerfile             # Build Docker multi-etapa
+│   ├── package.json           # Dependencias Node.js
+│   └── README.md              # Documentación de la app demo
 ├── otel-collector/            # OpenTelemetry Collector
-│   └── otel-collector-config.yaml  # Collector configuration
-├── prometheus/                # Prometheus time-series database
-│   ├── prometheus.yml         # Prometheus configuration
-│   └── rules/                 # Recording and alerting rules
+│   └── otel-collector-config.yaml  # Configuración del Collector
+├── prometheus/                # Base de datos de series temporales Prometheus
+│   ├── prometheus.yml         # Configuración de Prometheus
+│   └── rules/                 # Reglas de grabación y alertas
 │       ├── recording-rules.yml
 │       └── slo-alerts.yml
-├── tempo/                     # Grafana Tempo distributed tracing
-│   └── tempo.yaml            # Tempo configuration
-├── grafana/                   # Grafana visualization
+├── tempo/                     # Trazas distribuidas Grafana Tempo
+│   └── tempo.yaml            # Configuración de Tempo
+├── grafana/                   # Visualización Grafana
 │   └── provisioning/
-│       ├── datasources/       # Auto-configured datasources
+│       ├── datasources/       # Datasources autoconfigurados
 │       │   ├── prometheus.yml
 │       │   └── tempo.yml
-│       ├── dashboards/        # Dashboard provisioning config
-│       │   └── json/          # Dashboard JSON definitions
+│       ├── dashboards/        # Configuración de provisioning de dashboards
+│       │   └── json/          # Definiciones JSON de dashboards
 │       │       ├── sli-slo-dashboard.json
 │       │       ├── app-performance-dashboard.json
 │       │       └── distributed-tracing-dashboard.json
-│       └── alerting/          # Alert rules
+│       └── alerting/          # Reglas de alerta
 │           └── rules.yml
-├── anomaly-detector/          # Python ML anomaly detection service
-│   ├── anomaly_detector.py    # Isolation Forest algorithm
-│   ├── prometheus_client.py   # Prometheus query client
-│   ├── main.py               # Service entry point
-│   ├── requirements.txt      # Python dependencies
-│   ├── Dockerfile            # Python service Docker build
-│   └── test_anomaly_detector.py  # Unit tests
-├── k8s/                       # Kubernetes deployment manifests
-│   ├── base/                  # Base Kubernetes resources
+├── anomaly-detector/          # Servicio Python de detección de anomalías ML
+│   ├── anomaly_detector.py    # Algoritmo Isolation Forest
+│   ├── prometheus_client.py   # Cliente de consulta Prometheus
+│   ├── main.py               # Punto de entrada del servicio
+│   ├── requirements.txt      # Dependencias Python
+│   ├── Dockerfile            # Build Docker del servicio Python
+│   └── test_anomaly_detector.py  # Pruebas unitarias
+├── k8s/                       # Manifiestos de despliegue Kubernetes
+│   ├── base/                  # Recursos base de Kubernetes
 │   │   ├── demo-app-deployment.yaml
 │   │   ├── prometheus-statefulset.yaml
 │   │   ├── tempo-statefulset.yaml
 │   │   └── ...
-│   └── overlays/              # Environment-specific overlays
+│   └── overlays/              # Overlays específicos por entorno
 │       ├── dev/
 │       └── prod/
-├── helm/                      # Helm charts
+├── helm/                      # Charts Helm
 │   └── aiops-platform/
 │       ├── Chart.yaml
 │       ├── values.yaml
 │       ├── values-dev.yaml
 │       ├── values-prod.yaml
 │       └── templates/
-├── scripts/                   # Utility scripts
-│   ├── smoke-tests.ps1       # Smoke tests for CI/CD
-│   ├── ci-smoke-tests.sh     # Linux smoke tests
-│   └── ...
-├── docker-compose.yml         # Docker Compose orchestration
-├── generate-continuous-traffic.ps1  # Traffic generation script
-├── generate-test-errors.ps1   # Error simulation script
-├── generate-mixed-traffic.ps1 # Mixed traffic (normal + errors)
-└── README.md                  # This file
+├── scripts/                   # Scripts de utilidad
+│   ├── validation/            # Scripts de validación
+│   ├── traffic-generation/    # Scripts de generación de tráfico
+│   └── utilities/             # Scripts de utilidades
+├── docs/                      # Documentación
+│   ├── validation-reports/    # Reportes de validación
+│   ├── guides/                # Guías de usuario
+│   ├── summaries/             # Resúmenes técnicos
+│   └── ci-cd/                 # Documentación CI/CD
+├── docker-compose.yml         # Orquestación Docker Compose
+└── README.md                  # Este archivo
 ```
 
-### Key Directories Explained
+### Directorios Clave Explicados
 
-| Directory | Purpose | Key Files |
+| Directorio | Propósito | Archivos Clave |
 |-----------|---------|-----------|
-| `demo-app/` | Instrumented Node.js application | `src/index.js`, `src/tracing.js` |
-| `otel-collector/` | Telemetry collection and routing | `otel-collector-config.yaml` |
-| `prometheus/` | Metrics storage and querying | `prometheus.yml`, `rules/*.yml` |
-| `tempo/` | Distributed trace storage | `tempo.yaml` |
-| `grafana/` | Visualization and dashboards | `provisioning/dashboards/json/*.json` |
-| `anomaly-detector/` | ML-based anomaly detection | `anomaly_detector.py` |
-| `k8s/` | Kubernetes deployment | `base/*.yaml`, `overlays/*/` |
-| `helm/` | Helm chart for K8s | `aiops-platform/` |
-| `.github/workflows/` | CI/CD pipelines | `main-pipeline.yml` |
+| `demo-app/` | Aplicación Node.js instrumentada | `src/index.js`, `src/tracing.js` |
+| `otel-collector/` | Recopilación y enrutamiento de telemetría | `otel-collector-config.yaml` |
+| `prometheus/` | Almacenamiento y consulta de métricas | `prometheus.yml`, `rules/*.yml` |
+| `tempo/` | Almacenamiento de trazas distribuidas | `tempo.yaml` |
+| `grafana/` | Visualización y dashboards | `provisioning/dashboards/json/*.json` |
+| `anomaly-detector/` | Detección de anomalías basada en ML | `anomaly_detector.py` |
+| `k8s/` | Despliegue Kubernetes | `base/*.yaml`, `overlays/*/` |
+| `helm/` | Chart Helm para K8s | `aiops-platform/` |
+| `.github/workflows/` | Pipelines CI/CD | `main-pipeline.yml` |
+| `docs/` | Documentación completa | `validation-reports/`, `guides/` |
+| `scripts/` | Scripts de utilidad | `validation/`, `traffic-generation/`, `utilities/` |
 
-## 🎯 Key Features
+## 🎯 Características Clave
 
-### SLI/SLO Monitoring
-- **Track latency percentiles** (P95, P99) with configurable thresholds
-- **Monitor error rates** and availability in real-time
-- **Calculate error budgets** automatically based on SLO targets
-- **Visualize burn rates** with multi-window analysis (1h, 6h, 24h)
-- **Project budget exhaustion** to take proactive action
+### Monitoreo SLI/SLO
+- **Seguimiento de percentiles de latencia** (P95, P99) con umbrales configurables
+- **Monitoreo de tasas de error** y disponibilidad en tiempo real
+- **Cálculo automático de presupuestos de error** basado en objetivos SLO
+- **Visualización de tasas de consumo** con análisis multi-ventana (1h, 6h, 24h)
+- **Proyección de agotamiento de presupuesto** para tomar acción proactiva
 
-### Distributed Tracing
-- **End-to-end request tracing** across all services
-- **Service dependency mapping** to understand system architecture
-- **Latency breakdown analysis** to identify slow components
-- **Error trace highlighting** for quick problem identification
-- **Context propagation** across service boundaries
+### Trazas Distribuidas
+- **Trazado de solicitudes de extremo a extremo** a través de todos los servicios
+- **Mapeo de dependencias de servicios** para entender la arquitectura del sistema
+- **Análisis de desglose de latencia** para identificar componentes lentos
+- **Resaltado de trazas de error** para identificación rápida de problemas
+- **Propagación de contexto** a través de límites de servicios
 
-### Intelligent Anomaly Detection
-- **ML-based pattern recognition** using Isolation Forest algorithm
-- **Automatic anomaly alerts** with confidence scoring
-- **Historical baseline learning** (7-30 days of data)
-- **Reduced false positives** through statistical analysis
-- **Predictive insights** to prevent incidents
+### Detección Inteligente de Anomalías
+- **Reconocimiento de patrones basado en ML** usando algoritmo Isolation Forest
+- **Alertas automáticas de anomalías** con puntuación de confianza
+- **Aprendizaje de línea base histórica** (7-30 días de datos)
+- **Reducción de falsos positivos** a través de análisis estadístico
+- **Insights predictivos** para prevenir incidentes
 
-### SLO-Driven Alerting
-- **Multi-window multi-burn-rate alerts** (Google SRE best practice)
-- **Error budget consumption alerts** before budget exhaustion
-- **Latency threshold alerts** when P95 exceeds SLI
-- **Anomaly detection alerts** for unusual patterns
-- **Contextual alert information** for faster resolution
+### Alertas Basadas en SLO
+- **Alertas multi-ventana multi-tasa-de-consumo** (mejor práctica de Google SRE)
+- **Alertas de consumo de presupuesto de error** antes del agotamiento del presupuesto
+- **Alertas de umbral de latencia** cuando P95 excede SLI
+- **Alertas de detección de anomalías** para patrones inusuales
+- **Información contextual de alertas** para resolución más rápida
 
-## 📊 Understanding the Dashboards
+## 📊 Entendiendo los Dashboards
 
-### 1. SLI/SLO Dashboard
+### 1. Dashboard SLI/SLO
 
-**Purpose:** Monitor service level objectives and error budget consumption
+**Propósito:** Monitorear objetivos de nivel de servicio y consumo de presupuesto de error
 
-**Key Panels:**
+**Paneles Clave:**
 
-| Panel | What It Shows | How to Interpret |
+| Panel | Qué Muestra | Cómo Interpretar |
 |-------|---------------|------------------|
-| **Request Latency (P95/P99)** | 95th and 99th percentile latency | Green = Good (<200ms), Red = SLO breach |
-| **Success Rate** | % of successful requests (non-5xx) | Target: 99.9%, Yellow <99.5%, Red <99% |
-| **Error Budget Remaining** | % of error budget left for 30d window | Green >50%, Yellow 20-50%, Red <20% |
-| **Error Rate** | % of failed requests (4xx, 5xx) | Target: <1%, Alert if >1% |
-| **Burn Rate (Multi-Window)** | Rate of error budget consumption | Critical if >14.4x (budget gone in 2 days) |
-| **Current Burn Rate** | 1-hour burn rate | Shows immediate consumption rate |
-| **Error Budget (30d)** | Total, consumed, and remaining budget | Track budget over time |
-| **Latency SLO Compliance** | % of requests meeting latency SLO | Target: 99.9% under 200ms |
-| **Request Rate** | Throughput (requests/second) | Monitor traffic patterns |
+| **Latencia de Solicitud (P95/P99)** | Latencia percentil 95 y 99 | Verde = Bueno (<200ms), Rojo = Violación SLO |
+| **Tasa de Éxito** | % de solicitudes exitosas (no-5xx) | Objetivo: 99.9%, Amarillo <99.5%, Rojo <99% |
+| **Presupuesto de Error Restante** | % de presupuesto de error restante para ventana de 30d | Verde >50%, Amarillo 20-50%, Rojo <20% |
+| **Tasa de Error** | % de solicitudes fallidas (4xx, 5xx) | Objetivo: <1%, Alerta si >1% |
+| **Tasa de Consumo (Multi-Ventana)** | Tasa de consumo de presupuesto de error | Crítico si >14.4x (presupuesto agotado en 2 días) |
+| **Tasa de Consumo Actual** | Tasa de consumo de 1 hora | Muestra tasa de consumo inmediata |
+| **Presupuesto de Error (30d)** | Total, consumido y restante | Seguir presupuesto a lo largo del tiempo |
+| **Cumplimiento SLO de Latencia** | % de solicitudes que cumplen SLO de latencia | Objetivo: 99.9% bajo 200ms |
+| **Tasa de Solicitudes** | Throughput (solicitudes/segundo) | Monitorear patrones de tráfico |
 
-**How to Use:**
-1. **Check Success Rate gauge** - Is it above 99.9%?
-2. **Monitor Burn Rate** - Is it accelerating?
-3. **Review Error Budget** - How much budget remains?
-4. **Investigate spikes** - Click on anomalies to drill down
+**Cómo Usar:**
+1. **Verificar medidor de Tasa de Éxito** - ¿Está por encima del 99.9%?
+2. **Monitorear Tasa de Consumo** - ¿Se está acelerando?
+3. **Revisar Presupuesto de Error** - ¿Cuánto presupuesto queda?
+4. **Investigar picos** - Hacer clic en anomalías para profundizar
 
-**Alert Thresholds:**
-- 🔴 **Critical**: Burn rate >14.4x (budget exhausted in <2 days)
-- 🟡 **Warning**: Burn rate >6x (budget exhausted in <5 days)
-- 🟢 **Normal**: Burn rate <3x
+**Umbrales de Alerta:**
+- 🔴 **Crítico**: Tasa de consumo >14.4x (presupuesto agotado en <2 días)
+- 🟡 **Advertencia**: Tasa de consumo >6x (presupuesto agotado en <5 días)
+- 🟢 **Normal**: Tasa de consumo <3x
 
-### 2. Application Performance Dashboard
+### 2. Dashboard de Rendimiento de Aplicación
 
-**Purpose:** Monitor application health and resource utilization
+**Propósito:** Monitorear salud de aplicación y utilización de recursos
 
-**Key Panels:**
+**Paneles Clave:**
 
-| Panel | What It Shows | How to Interpret |
+| Panel | Qué Muestra | Cómo Interpretar |
 |-------|---------------|------------------|
-| **Request Duration Histogram** | Distribution of request latencies | Look for bimodal distributions or long tails |
-| **Request Duration by Endpoint** | Latency breakdown per API endpoint | Identify slow endpoints |
-| **Throughput by Endpoint** | Requests/sec per endpoint | Understand traffic patterns |
-| **Top 10 Endpoints** | Most frequently called endpoints | Optimize high-traffic endpoints |
-| **Error Rate Breakdown** | Errors by status code (4xx, 5xx) | 4xx = client errors, 5xx = server errors |
-| **Status Code Distribution** | Pie chart of response codes | Healthy = mostly 2xx |
-| **CPU Utilization** | CPU usage over time | Alert if >80% sustained |
-| **Memory Utilization** | Memory usage over time | Alert if >80% or growing |
-| **Current CPU/Heap Usage** | Real-time resource usage | Monitor for resource exhaustion |
-| **Total Request Rate** | Overall throughput | Baseline for capacity planning |
+| **Histograma de Duración de Solicitud** | Distribución de latencias de solicitud | Buscar distribuciones bimodales o colas largas |
+| **Duración de Solicitud por Endpoint** | Desglose de latencia por endpoint API | Identificar endpoints lentos |
+| **Throughput por Endpoint** | Solicitudes/seg por endpoint | Entender patrones de tráfico |
+| **Top 10 Endpoints** | Endpoints más frecuentemente llamados | Optimizar endpoints de alto tráfico |
+| **Desglose de Tasa de Error** | Errores por código de estado (4xx, 5xx) | 4xx = errores de cliente, 5xx = errores de servidor |
+| **Distribución de Código de Estado** | Gráfico circular de códigos de respuesta | Saludable = mayormente 2xx |
+| **Utilización de CPU** | Uso de CPU a lo largo del tiempo | Alerta si >80% sostenido |
+| **Utilización de Memoria** | Uso de memoria a lo largo del tiempo | Alerta si >80% o creciendo |
+| **Uso Actual de CPU/Heap** | Uso de recursos en tiempo real | Monitorear agotamiento de recursos |
+| **Tasa Total de Solicitudes** | Throughput general | Línea base para planificación de capacidad |
 
-**How to Use:**
-1. **Check resource utilization** - CPU/Memory under 80%?
-2. **Review error breakdown** - Are 5xx errors increasing?
-3. **Identify slow endpoints** - Which APIs need optimization?
-4. **Monitor throughput** - Is traffic within expected range?
+**Cómo Usar:**
+1. **Verificar utilización de recursos** - ¿CPU/Memoria bajo 80%?
+2. **Revisar desglose de errores** - ¿Están aumentando los errores 5xx?
+3. **Identificar endpoints lentos** - ¿Qué APIs necesitan optimización?
+4. **Monitorear throughput** - ¿El tráfico está dentro del rango esperado?
 
-### 3. Distributed Tracing Dashboard
+### 3. Dashboard de Trazas Distribuidas
 
-**Purpose:** Analyze request flows and identify bottlenecks
+**Propósito:** Analizar flujos de solicitudes e identificar cuellos de botella
 
-**Key Panels:**
+**Paneles Clave:**
 
-| Panel | What It Shows | How to Interpret |
+| Panel | Qué Muestra | Cómo Interpretar |
 |-------|---------------|------------------|
-| **Service Request Rate** | Requests/sec per service | Understand service load |
-| **Latency Breakdown** | P50, P95, P99 per service | Identify slow services |
-| **Trace Volume** | Number of traces by status | Monitor trace collection |
-| **Average Spans per Trace** | Complexity of requests | More spans = more service calls |
+| **Tasa de Solicitud de Servicio** | Solicitudes/seg por servicio | Entender carga de servicio |
+| **Desglose de Latencia** | P50, P95, P99 por servicio | Identificar servicios lentos |
+| **Volumen de Trazas** | Número de trazas por estado | Monitorear recopilación de trazas |
+| **Promedio de Spans por Traza** | Complejidad de solicitudes | Más spans = más llamadas de servicio |
 
-**How to Use Trace Search:**
-1. Navigate to **Grafana Explore** (compass icon)
-2. Select **Tempo** datasource
-3. Use queries:
-   - `{status=error}` - Find all error traces
-   - `{service.name="demo-app"}` - Filter by service
-   - `{http.status_code="500"}` - Find specific errors
-4. Click on a trace to see detailed span timeline
-5. Analyze span duration to find bottlenecks
+**Cómo Usar Búsqueda de Trazas:**
+1. Navegar a **Grafana Explore** (ícono de brújula)
+2. Seleccionar datasource **Tempo**
+3. Usar consultas:
+   - `{status=error}` - Encontrar todas las trazas de error
+   - `{service.name="demo-app"}` - Filtrar por servicio
+   - `{http.status_code="500"}` - Encontrar errores específicos
+4. Hacer clic en una traza para ver línea de tiempo detallada de spans
+5. Analizar duración de span para encontrar cuellos de botella
 
-**Trace Analysis Tips:**
-- **Long spans** = slow operations (database, external API)
-- **Many spans** = complex request flow
-- **Error spans** = exceptions or failures
-- **Span attributes** = contextual information (user ID, endpoint, etc.)
+**Consejos de Análisis de Trazas:**
+- **Spans largos** = operaciones lentas (base de datos, API externa)
+- **Muchos spans** = flujo de solicitud complejo
+- **Spans de error** = excepciones o fallos
+- **Atributos de span** = información contextual (ID de usuario, endpoint, etc.)
 
-### Dashboard Best Practices
+### Mejores Prácticas de Dashboards
 
-1. **Start with SLI/SLO Dashboard** - Is the service healthy?
-2. **If SLO breach, check Application Performance** - What's causing it?
-3. **Use Distributed Tracing for root cause** - Which component is slow?
-4. **Monitor trends over time** - Are things getting better or worse?
-5. **Set up alerts** - Don't rely on manual checking
+1. **Comenzar con Dashboard SLI/SLO** - ¿El servicio está saludable?
+2. **Si hay violación de SLO, verificar Rendimiento de Aplicación** - ¿Qué lo está causando?
+3. **Usar Trazas Distribuidas para causa raíz** - ¿Qué componente es lento?
+4. **Monitorear tendencias a lo largo del tiempo** - ¿Las cosas están mejorando o empeorando?
+5. **Configurar alertas** - No depender de verificación manual
 
-## Development
+## Desarrollo
 
-### Running Tests
+### Ejecutar Pruebas
 
-#### Unit Tests
+#### Pruebas Unitarias
 ```bash
-# Demo app unit tests
+# Pruebas unitarias de la app demo
 cd demo-app
 npm test
 
-# Anomaly detector tests
+# Pruebas del detector de anomalías
 cd anomaly-detector
 python -m pytest
 ```
 
-#### Integration Tests
-The integration tests verify the complete telemetry pipeline from the demo app through the collector to Prometheus and Tempo.
+#### Pruebas de Integración
+Las pruebas de integración verifican el pipeline completo de telemetría desde la app demo a través del collector hasta Prometheus y Tempo.
 
-**Quick Start (Windows):**
+**Inicio Rápido (Windows):**
 ```cmd
 cd demo-app
 run-integration-tests.bat
 ```
 
-**Quick Start (Linux/Mac):**
+**Inicio Rápido (Linux/Mac):**
 ```bash
 cd demo-app
 chmod +x run-integration-tests.sh
 ./run-integration-tests.sh
 ```
 
-**Manual Execution:**
+**Ejecución Manual:**
 ```bash
-# 1. Start all services
+# 1. Iniciar todos los servicios
 docker-compose up -d
 
-# 2. Wait for services to be ready (30 seconds)
+# 2. Esperar a que los servicios estén listos (30 segundos)
 
-# 3. Run integration tests
+# 3. Ejecutar pruebas de integración
 cd demo-app
 npm run test:integration
 ```
 
-**What the integration tests verify:**
-- ✅ Collector receives OTLP metrics and traces from demo app
-- ✅ Metrics are exported in Prometheus format
-- ✅ Application and custom metrics appear in Prometheus
-- ✅ Traces are forwarded to Tempo with preserved context
-- ✅ Error traces are handled correctly
-- ✅ Complete end-to-end telemetry pipeline
+**Lo que verifican las pruebas de integración:**
+- ✅ El Collector recibe métricas y trazas OTLP de la app demo
+- ✅ Las métricas se exportan en formato Prometheus
+- ✅ Las métricas de aplicación y personalizadas aparecen en Prometheus
+- ✅ Las trazas se reenvían a Tempo con contexto preservado
+- ✅ Las trazas de error se manejan correctamente
+- ✅ Pipeline completo de telemetría de extremo a extremo
 
-For detailed information, see [demo-app/INTEGRATION_TESTS.md](demo-app/INTEGRATION_TESTS.md)
+Para información detallada, ver [demo-app/INTEGRATION_TESTS.md](demo-app/INTEGRATION_TESTS.md)
 
-### Building Docker Images
+### Construir Imágenes Docker
 ```bash
-# Build all images
+# Construir todas las imágenes
 docker-compose build
 
-# Build specific service
+# Construir servicio específico
 docker-compose build demo-app
 ```
 
-### Viewing Logs
+### Ver Logs
 ```bash
-# All services
+# Todos los servicios
 docker-compose logs -f
 
-# Specific service
+# Servicio específico
 docker-compose logs -f demo-app
 ```
 
-## ☸️ Kubernetes Deployment
+## ☸️ Despliegue en Kubernetes
 
-For production deployments on Kubernetes, we provide two options:
+Para despliegues de producción en Kubernetes, proporcionamos dos opciones:
 
-### Option 1: Helm Chart (Recommended)
+### Opción 1: Helm Chart (Recomendado)
 
 ```bash
-# Install with Helm
+# Instalar con Helm
 helm install aiops-platform ./helm/aiops-platform \
   --namespace observability \
   --create-namespace \
   --values helm/aiops-platform/values-prod.yaml
 
-# Verify deployment
+# Verificar despliegue
 kubectl get pods -n observability
 
-# Access Grafana (after LoadBalancer gets external IP)
+# Acceder a Grafana (después de que LoadBalancer obtenga IP externa)
 kubectl get svc -n observability grafana
 ```
 
-**Helm Chart Features:**
-- Parameterized configurations for different environments
-- Resource requests and limits pre-configured
-- HorizontalPodAutoscaler for demo-app
-- PersistentVolumeClaims for data persistence
-- ConfigMaps for all component configurations
+**Características del Helm Chart:**
+- Configuraciones parametrizadas para diferentes entornos
+- Requests y límites de recursos preconfigurados
+- HorizontalPodAutoscaler para demo-app
+- PersistentVolumeClaims para persistencia de datos
+- ConfigMaps para todas las configuraciones de componentes
 
-### Option 2: Kustomize
+### Opción 2: Kustomize
 
 ```bash
-# Deploy to development
+# Desplegar a desarrollo
 kubectl apply -k k8s/overlays/dev
 
-# Deploy to production
+# Desplegar a producción
 kubectl apply -k k8s/overlays/prod
 
-# Verify deployment
+# Verificar despliegue
 kubectl get all -n observability
 ```
 
-**Kustomize Features:**
-- Base manifests with environment-specific overlays
-- Easy customization per environment
-- GitOps-friendly structure
+**Características de Kustomize:**
+- Manifiestos base con overlays específicos por entorno
+- Fácil personalización por entorno
+- Estructura amigable con GitOps
 
-### Kubernetes Architecture
+### Arquitectura Kubernetes
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              Kubernetes Cluster                  │
+│              Cluster Kubernetes                  │
 │                                                  │
 │  ┌──────────────┐  ┌──────────────┐            │
 │  │  Deployment  │  │  Deployment  │            │
 │  │  demo-app    │  │ otel-collector│           │
-│  │  (3 replicas)│  │  (2 replicas)│            │
+│  │  (3 réplicas)│  │  (2 réplicas)│            │
 │  └──────────────┘  └──────────────┘            │
 │                                                  │
 │  ┌──────────────┐  ┌──────────────┐            │
 │  │ StatefulSet  │  │ StatefulSet  │            │
 │  │  Prometheus  │  │    Tempo     │            │
-│  │  (with PVC)  │  │  (with PVC)  │            │
+│  │  (con PVC)   │  │  (con PVC)   │            │
 │  └──────────────┘  └──────────────┘            │
 │                                                  │
 │  ┌──────────────┐  ┌──────────────┐            │
 │  │  Deployment  │  │  Deployment  │            │
-│  │   Grafana    │  │   Anomaly    │            │
-│  │(LoadBalancer)│  │   Detector   │            │
+│  │   Grafana    │  │   Detector   │            │
+│  │(LoadBalancer)│  │   Anomalías  │            │
 │  └──────────────┘  └──────────────┘            │
 └─────────────────────────────────────────────────┘
 ```
 
-### Resource Requirements
+### Requisitos de Recursos
 
-| Component | CPU Request | Memory Request | CPU Limit | Memory Limit |
+| Componente | CPU Request | Memory Request | CPU Limit | Memory Limit |
 |-----------|-------------|----------------|-----------|--------------|
 | demo-app | 100m | 128Mi | 500m | 512Mi |
 | otel-collector | 200m | 256Mi | 1000m | 512Mi |
@@ -577,240 +581,242 @@ kubectl get all -n observability
 | grafana | 100m | 256Mi | 500m | 512Mi |
 | anomaly-detector | 100m | 256Mi | 500m | 512Mi |
 
-**Total Cluster Requirements:** ~2 CPU cores, ~4.5GB RAM minimum
+**Requisitos Totales del Cluster:** ~2 núcleos CPU, ~4.5GB RAM mínimo
 
-### Scaling Considerations
+### Consideraciones de Escalado
 
 ```bash
-# Scale demo-app horizontally
+# Escalar demo-app horizontalmente
 kubectl scale deployment demo-app --replicas=5 -n observability
 
-# HorizontalPodAutoscaler is pre-configured
+# HorizontalPodAutoscaler está preconfigurado
 kubectl get hpa -n observability
 
-# Scale Prometheus vertically (edit StatefulSet)
+# Escalar Prometheus verticalmente (editar StatefulSet)
 kubectl edit statefulset prometheus -n observability
 ```
 
-For detailed Kubernetes deployment instructions, see [k8s/README.md](k8s/README.md)
+Para instrucciones detalladas de despliegue en Kubernetes, ver [k8s/README.md](k8s/README.md)
 
-## CI/CD Pipeline
+## Pipeline CI/CD
 
-The project includes a GitHub Actions pipeline that:
-1. Runs tests and linters
-2. Builds Docker images
-3. Deploys to staging
-4. Runs smoke tests
-5. Promotes to production (manual approval)
+El proyecto incluye un pipeline de GitHub Actions que:
+1. Ejecuta pruebas y linters
+2. Construye imágenes Docker
+3. Despliega a staging
+4. Ejecuta smoke tests
+5. Promueve a producción (aprobación manual)
 
-## Monitoring the Platform
+Para más información, ver [docs/ci-cd/CI-CD-DOCS-INDEX.md](docs/ci-cd/CI-CD-DOCS-INDEX.md)
 
-The observability platform monitors itself:
-- OTel Collector metrics (dropped data, export latency)
-- Prometheus storage and query performance
-- Tempo ingestion and storage
-- Grafana dashboard performance
+## Monitoreo de la Plataforma
 
-## 🔧 Troubleshooting
+La plataforma de observabilidad se monitorea a sí misma:
+- Métricas del OTel Collector (datos descartados, latencia de exportación)
+- Almacenamiento y rendimiento de consultas de Prometheus
+- Ingesta y almacenamiento de Tempo
+- Rendimiento de dashboards de Grafana
 
-### Common Issues and Solutions
+## 🔧 Solución de Problemas
 
-#### 1. Services Not Starting
+### Problemas Comunes y Soluciones
 
-**Problem:** One or more containers fail to start
+#### 1. Servicios No Inician
 
-**Solution:**
+**Problema:** Uno o más contenedores fallan al iniciar
+
+**Solución:**
 ```bash
-# Check service status
+# Verificar estado de servicios
 docker-compose ps
 
-# View logs for errors
-docker-compose logs <service-name>
+# Ver logs para errores
+docker-compose logs <nombre-servicio>
 
-# Common fixes:
-# - Port already in use: Stop conflicting services
-# - Out of memory: Increase Docker memory limit
-# - Permission issues: Run with appropriate permissions
+# Correcciones comunes:
+# - Puerto ya en uso: Detener servicios en conflicto
+# - Sin memoria: Aumentar límite de memoria de Docker
+# - Problemas de permisos: Ejecutar con permisos apropiados
 
-# Restart specific service
-docker-compose restart <service-name>
+# Reiniciar servicio específico
+docker-compose restart <nombre-servicio>
 
-# Full restart
+# Reinicio completo
 docker-compose down
 docker-compose up -d
 ```
 
-#### 2. No Metrics in Grafana
+#### 2. Sin Métricas en Grafana
 
-**Problem:** Dashboards show "No data" or empty panels
+**Problema:** Los dashboards muestran "Sin datos" o paneles vacíos
 
-**Diagnosis:**
+**Diagnóstico:**
 ```bash
-# 1. Check if Prometheus is scraping targets
-# Open: http://localhost:9090/targets
-# All targets should show "UP" status
+# 1. Verificar si Prometheus está scrapeando targets
+# Abrir: http://localhost:9090/targets
+# Todos los targets deben mostrar estado "UP"
 
-# 2. Check OTel Collector logs
+# 2. Verificar logs del OTel Collector
 docker-compose logs otel-collector | grep -i error
 
-# 3. Verify demo app is sending metrics
+# 3. Verificar que la app demo está enviando métricas
 docker-compose logs demo-app | grep -i "metrics"
 
-# 4. Test metrics endpoint directly
+# 4. Probar endpoint de métricas directamente
 curl http://localhost:3000/metrics
 ```
 
-**Solution:**
+**Solución:**
 ```bash
-# Generate traffic to create metrics
-.\generate-continuous-traffic.ps1 -DurationSeconds 30
+# Generar tráfico para crear métricas
+.\scripts\traffic-generation\generate-continuous-traffic.ps1 -DurationSeconds 30
 
-# Restart Grafana to reload datasources
+# Reiniciar Grafana para recargar datasources
 docker-compose restart grafana
 
-# Verify Prometheus has data
+# Verificar que Prometheus tiene datos
 curl http://localhost:9090/api/v1/query?query=up
 ```
 
-#### 3. No Traces in Tempo
+#### 3. Sin Trazas en Tempo
 
-**Problem:** Distributed Tracing dashboard shows no traces
+**Problema:** El dashboard de Trazas Distribuidas no muestra trazas
 
-**Diagnosis:**
+**Diagnóstico:**
 ```bash
-# 1. Check Tempo is receiving data
+# 1. Verificar que Tempo está recibiendo datos
 docker-compose logs tempo | grep -i "received"
 
-# 2. Verify OTel Collector trace pipeline
+# 2. Verificar pipeline de trazas del OTel Collector
 docker-compose logs otel-collector | grep -i "trace"
 
-# 3. Check demo app trace export
+# 3. Verificar exportación de trazas de la app demo
 docker-compose logs demo-app | grep -i "span"
 ```
 
-**Solution:**
+**Solución:**
 ```bash
-# Generate traffic to create traces
+# Generar tráfico para crear trazas
 curl http://localhost:3000/api/users
 curl http://localhost:3000/api/products
 
-# Query Tempo directly
+# Consultar Tempo directamente
 curl http://localhost:3200/api/search
 
-# In Grafana Explore, use query: {status=error}
+# En Grafana Explore, usar consulta: {status=error}
 ```
 
-#### 4. Dashboards Not Loading
+#### 4. Dashboards No Cargan
 
-**Problem:** Grafana dashboards are missing or not loading
+**Problema:** Los dashboards de Grafana faltan o no cargan
 
-**Solution:**
+**Solución:**
 ```bash
-# 1. Restart Grafana
+# 1. Reiniciar Grafana
 docker-compose restart grafana
 
-# 2. Check provisioning logs
+# 2. Verificar logs de provisioning
 docker-compose logs grafana | grep -i "provisioning"
 
-# 3. Verify dashboard files exist
+# 3. Verificar que existen archivos de dashboard
 ls -la grafana/provisioning/dashboards/json/
 
-# 4. Re-provision dashboards
+# 4. Re-provisionar dashboards
 docker-compose down grafana
 docker-compose up -d grafana
 ```
 
-#### 5. High Memory Usage
+#### 5. Alto Uso de Memoria
 
-**Problem:** Docker containers consuming too much memory
+**Problema:** Los contenedores Docker consumen demasiada memoria
 
-**Solution:**
+**Solución:**
 ```bash
-# Check memory usage
+# Verificar uso de memoria
 docker stats
 
-# Adjust memory limits in docker-compose.yml
-# For Prometheus:
+# Ajustar límites de memoria en docker-compose.yml
+# Para Prometheus:
 mem_limit: 2g
 
-# For Tempo:
+# Para Tempo:
 mem_limit: 1g
 
-# Restart with new limits
+# Reiniciar con nuevos límites
 docker-compose up -d
 ```
 
-#### 6. Anomaly Detector Not Working
+#### 6. Detector de Anomalías No Funciona
 
-**Problem:** No anomaly alerts being generated
+**Problema:** No se generan alertas de anomalías
 
-**Diagnosis:**
+**Diagnóstico:**
 ```bash
-# Check anomaly detector logs
+# Verificar logs del detector de anomalías
 docker-compose logs anomaly-detector
 
-# Verify it can query Prometheus
+# Verificar que puede consultar Prometheus
 docker-compose exec anomaly-detector curl http://prometheus:9090/api/v1/query?query=up
 ```
 
-**Solution:**
+**Solución:**
 ```bash
-# Ensure sufficient historical data (7+ days recommended)
-# For testing, trigger anomalies manually:
-.\generate-test-errors.ps1 -ErrorCount 50
+# Asegurar datos históricos suficientes (7+ días recomendado)
+# Para pruebas, disparar anomalías manualmente:
+.\scripts\traffic-generation\generate-test-errors.ps1 -ErrorCount 50
 
-# Restart anomaly detector
+# Reiniciar detector de anomalías
 docker-compose restart anomaly-detector
 ```
 
-#### 7. Port Conflicts
+#### 7. Conflictos de Puertos
 
-**Problem:** "Port already in use" error
+**Problema:** Error "Puerto ya en uso"
 
-**Solution:**
+**Solución:**
 ```bash
-# Find process using the port (Windows)
+# Encontrar proceso usando el puerto (Windows)
 netstat -ano | findstr :3001
 
-# Kill the process
+# Matar el proceso
 taskkill /PID <process_id> /F
 
-# Or change ports in docker-compose.yml
+# O cambiar puertos en docker-compose.yml
 ports:
-  - "3002:3000"  # Use different external port
+  - "3002:3000"  # Usar puerto externo diferente
 ```
 
-### Getting Help
+### Obtener Ayuda
 
-If you're still experiencing issues:
+Si aún experimentas problemas:
 
-1. **Check logs**: `docker-compose logs -f`
-2. **Verify prerequisites**: Docker version, available ports, memory
-3. **Review documentation**: Check component-specific READMEs
-4. **Search issues**: Look for similar problems in GitHub issues
-5. **Create an issue**: Provide logs, docker-compose ps output, and steps to reproduce
+1. **Verificar logs**: `docker-compose logs -f`
+2. **Verificar prerrequisitos**: Versión de Docker, puertos disponibles, memoria
+3. **Revisar documentación**: Verificar READMEs específicos de componentes
+4. **Buscar issues**: Buscar problemas similares en GitHub issues
+5. **Crear un issue**: Proporcionar logs, salida de docker-compose ps y pasos para reproducir
 
-### Diagnostic Scripts
+### Scripts de Diagnóstico
 
-We provide diagnostic scripts to help troubleshoot:
+Proporcionamos scripts de diagnóstico para ayudar a solucionar problemas:
 
 ```powershell
-# Check if metrics are flowing
-.\verify-error-rate.ps1
+# Verificar si las métricas están fluyendo
+.\scripts\utilities\verify-error-rate.ps1
 
-# Diagnose telemetry pipeline
-.\diagnose-telemetry.bat
+# Diagnosticar pipeline de telemetría
+.\scripts\utilities\diagnose-telemetry.bat
 
-# List available metrics
-.\list-available-metrics.ps1
+# Listar métricas disponibles
+.\scripts\utilities\list-available-metrics.ps1
 
-# Verify dashboards
-.\verify-dashboards.ps1
+# Verificar dashboards
+.\scripts\utilities\verify-dashboards.ps1
 ```
 
-### Health Check Endpoints
+### Endpoints de Health Check
 
-All services expose health check endpoints:
+Todos los servicios exponen endpoints de health check:
 
 ```bash
 # Demo App
@@ -827,53 +833,69 @@ curl http://localhost:3200/ready
 curl http://localhost:3001/api/health
 ```
 
-## Performance Considerations
+## Consideraciones de Rendimiento
 
-- **Prometheus**: Adjust retention period based on storage capacity
-- **Tempo**: Configure appropriate trace retention
-- **OTel Collector**: Tune batch size and memory limits
-- **Anomaly Detector**: Adjust check interval based on metric volume
+- **Prometheus**: Ajustar período de retención basado en capacidad de almacenamiento
+- **Tempo**: Configurar retención de trazas apropiada
+- **OTel Collector**: Ajustar tamaño de batch y límites de memoria
+- **Detector de Anomalías**: Ajustar intervalo de verificación basado en volumen de métricas
 
-## Security
+## Seguridad
 
-For production deployments:
-- Change default Grafana credentials
-- Enable authentication on Prometheus and Tempo
-- Use network policies to restrict access
-- Store secrets in secure secret management systems
+Para despliegues de producción:
+- Cambiar credenciales predeterminadas de Grafana
+- Habilitar autenticación en Prometheus y Tempo
+- Usar políticas de red para restringir acceso
+- Almacenar secretos en sistemas seguros de gestión de secretos
 
-## Contributing
+## Contribuir
 
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes with tests
-4. Submit a pull request
+¡Las contribuciones son bienvenidas! Por favor:
+1. Hacer fork del repositorio
+2. Crear una rama de feature
+3. Hacer cambios con pruebas
+4. Enviar un pull request
 
-## License
+## Licencia
 
-[Your License Here]
+[Tu Licencia Aquí]
 
-## Support
+## Soporte
 
-For issues and questions:
-- Open an issue on GitHub
-- Check the troubleshooting section
-- Review component logs
+Para problemas y preguntas:
+- Abrir un issue en GitHub
+- Verificar la sección de solución de problemas
+- Revisar logs de componentes
 
-## Roadmap
+## Hoja de Ruta
 
-Future enhancements:
-- Logs integration with Loki
-- Service mesh integration (Istio/Linkerd)
-- Advanced AIOps (root cause analysis)
-- Cost optimization recommendations
-- Multi-tenancy support
-- Chaos engineering integration
+Mejoras futuras:
+- Integración de logs con Loki
+- Integración con service mesh (Istio/Linkerd)
+- AIOps avanzado (análisis de causa raíz)
+- Recomendaciones de optimización de costos
+- Soporte multi-tenancy
+- Integración con chaos engineering
 
-## References
+## Referencias
 
-- [OpenTelemetry Documentation](https://opentelemetry.io/docs/)
-- [Prometheus Documentation](https://prometheus.io/docs/)
-- [Grafana Tempo Documentation](https://grafana.com/docs/tempo/)
-- [Google SRE Book - SLIs, SLOs, and Error Budgets](https://sre.google/sre-book/service-level-objectives/)
+- [Documentación OpenTelemetry](https://opentelemetry.io/docs/)
+- [Documentación Prometheus](https://prometheus.io/docs/)
+- [Documentación Grafana Tempo](https://grafana.com/docs/tempo/)
+- [Libro Google SRE - SLIs, SLOs y Presupuestos de Error](https://sre.google/sre-book/service-level-objectives/)
+
+---
+
+## 📚 Documentación Adicional
+
+Para más información detallada, consulta:
+
+- **[Índice de Documentación](DOCUMENTATION_INDEX.md)** - Índice completo de toda la documentación
+- **[Reportes de Validación](docs/validation-reports/VALIDATION_INDEX.md)** - Validaciones completas del sistema
+- **[Guías de Usuario](docs/guides/)** - Guías detalladas de uso y configuración
+- **[Documentación CI/CD](docs/ci-cd/CI-CD-DOCS-INDEX.md)** - Información del pipeline CI/CD
+- **[Resúmenes Técnicos](docs/summaries/)** - Resúmenes de tareas y correcciones
+
+---
+
+**¿Preguntas? Consulta el [Índice de Documentación](DOCUMENTATION_INDEX.md) para encontrar la información que necesitas.**
