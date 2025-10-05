@@ -99,11 +99,15 @@ scripts\smoke-tests.bat
 ### Opción 1: Script Automatizado
 
 ```bash
-# Windows
-.\generate-traffic.bat
+# Continuo
+.\scripts\traffic-generation\generate-continuous-traffic.ps1 -DurationSeconds 60 -RequestsPerSecond 5
 
-# Linux/Mac
-./generate-traffic.sh
+# Error
+.\scripts\traffic-generation\generate-test-errors.ps1 -DurationSeconds 60 -RequestsPerSecond 5
+
+# Trafico mixto
+.\scripts\traffic-generation\generate-mixed-traffic.ps1 -DurationSeconds 60 -RequestsPerSecond 5
+
 ```
 
 ### Opción 2: Manual
@@ -120,7 +124,17 @@ for i in {1..10}; do curl http://localhost:3000/api/error; done
 
 ## 📈 Ver Métricas y Trazas
 
+### URLs de Servicios
+```
+Demo App:       http://localhost:3000
+Prometheus:     http://localhost:9090
+Grafana:        http://localhost:3001
+Tempo:          http://localhost:3200
+```
+
 ### En Grafana
+
+.\open-all-dashboards.bat
 
 1. Abrir http://localhost:3001
 2. Login: admin/admin
