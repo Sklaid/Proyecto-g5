@@ -200,6 +200,8 @@ Proyecto-g5/
 | Documento | Descripción |
 |-----------|-------------|
 | [README.md](README.md) | README principal del proyecto |
+| [ARQUITECTURA_Y_DIAGRAMAS.md](ARQUITECTURA_Y_DIAGRAMAS.md) | Arquitectura completa y diagramas consolidados |
+| [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) | Este documento - Índice maestro |
 | [docker-compose.yml](docker-compose.yml) | Configuración Docker Compose |
 | [.gitignore](.gitignore) | Archivos ignorados por Git |
 
